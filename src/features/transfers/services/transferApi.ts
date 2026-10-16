@@ -1,7 +1,7 @@
 import * as Crypto from 'expo-crypto';
 import * as Network from 'expo-network';
 import { openDatabaseAsync } from 'expo-sqlite';
-import { TransferError } from './errors';
+import { TransferError } from '../domain/errors';
 import { createLedger, type Ledger, type TransferAttempt } from './ledger';
 
 export type Simulation = 'normal' | 'offline' | 'insufficient' | 'response-lost';

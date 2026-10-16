@@ -1,6 +1,6 @@
 import * as LocalAuthentication from 'expo-local-authentication';
-import { authenticationError, authorizeTransfer } from '../src/features/auth/authorize';
-import { recipients } from '../src/features/transfers/fixtures';
+import { authenticationError, authorizeTransfer } from '../src/features/auth/services/authorize';
+import { recipients } from '../src/features/transfers/constants/demoData';
 
 jest.mock('expo-local-authentication', () => ({
   SecurityLevel: { NONE: 0, SECRET: 1, BIOMETRIC_STRONG: 3 },

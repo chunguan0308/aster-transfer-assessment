@@ -1,7 +1,8 @@
+import { MAX_NOTE_LENGTH, HISTORY_PAGE_SIZE } from '../constants/limits';
 import { z } from 'zod';
-import { TransferError } from './errors';
-import { initialAccount, recipients } from './fixtures';
-import type { Account, TransferDraft, TransferReceipt } from './types';
+import { TransferError } from '../domain/errors';
+import { initialAccount, recipients } from '../constants/demoData';
+import type { Account, TransferDraft, TransferReceipt } from '../domain/types';
 
 type SqlValue = string | number | null;
 export interface LedgerConnection {
@@ -26,7 +27,7 @@ const attemptSchema = z.object({
   draft: z.object({
     recipientId: z.string().refine((id) => recipients.some((recipient) => recipient.id === id)),
     amountMinor: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
-    note: z.string().trim().max(140),
+    note: z.string().trim().max(MAX_NOTE_LENGTH),
   }),
 });
 
@@ -169,7 +170,10 @@ export function createLedger(db: LedgerDatabase) {
       if (!receipt) throw new Error('Transfer did not produce a receipt.');
       return receipt;
     },
-    async history(cursor = Number.MAX_SAFE_INTEGER, limit = 20): Promise<HistoryPage> {
+    async history(
+      cursor = Number.MAX_SAFE_INTEGER,
+      limit = HISTORY_PAGE_SIZE,
+    ): Promise<HistoryPage> {
       if (!Number.isSafeInteger(cursor) || !Number.isInteger(limit) || limit < 1 || limit > 100)
         throw new Error('Invalid history page.');
       const rows = await db.getAllAsync<{ sequence: number; receipt: string }>(

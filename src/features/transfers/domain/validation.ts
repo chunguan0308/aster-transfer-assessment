@@ -1,3 +1,4 @@
+import { MAX_NOTE_LENGTH } from '../constants/limits';
 import { z } from 'zod';
 
 import { parseAmount } from './money';
@@ -24,7 +25,7 @@ export function transferSchema(balanceMinor: number) {
         return z.NEVER;
       }
     }),
-    note: z.string().trim().max(140, 'Keep your note to 140 characters.'),
+    note: z.string().trim().max(MAX_NOTE_LENGTH, 'Keep your note to 140 characters.'),
   });
 }
 

@@ -2,7 +2,7 @@ import {
   createLedger,
   type LedgerConnection,
   type LedgerDatabase,
-} from '../src/features/transfers/ledger';
+} from '../src/features/transfers/services/ledger';
 
 const { DatabaseSync } = jest.requireActual('node:sqlite');
 const key = '00000000-0000-4000-8000-000000000001';

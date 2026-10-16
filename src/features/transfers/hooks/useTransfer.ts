@@ -1,12 +1,13 @@
+import { queryKeys } from '../constants/queryKeys';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as Crypto from 'expo-crypto';
 import { useEffect, useRef, useState } from 'react';
 import { AppState, BackHandler } from 'react-native';
-import { authorizeTransfer, AuthenticationError } from '../auth/authorize';
-import { getLedger, submitTransfer, type Simulation } from './api';
-import { TransferError } from './errors';
-import type { TransferAttempt } from './ledger';
-import type { Recipient, TransferDraft, TransferReceipt } from './types';
+import { authorizeTransfer, AuthenticationError } from '../../auth/services/authorize';
+import { getLedger, submitTransfer, type Simulation } from '../services/transferApi';
+import { TransferError } from '../domain/errors';
+import type { TransferAttempt } from '../services/ledger';
+import type { Recipient, TransferDraft, TransferReceipt } from '../domain/types';
 
 export function useTransfer() {
   const client = useQueryClient();
@@ -91,8 +92,8 @@ export function useTransfer() {
       locked.current = false;
       if (lifecycle.current.active) setPhase('idle');
       await Promise.all([
-        client.invalidateQueries({ queryKey: ['account'] }),
-        client.invalidateQueries({ queryKey: ['history'] }),
+        client.invalidateQueries({ queryKey: queryKeys.account }),
+        client.invalidateQueries({ queryKey: queryKeys.history }),
       ]);
     },
   });

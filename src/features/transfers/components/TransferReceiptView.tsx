@@ -1,8 +1,9 @@
-import { StyleSheet, View } from 'react-native';
+import { styles } from './TransferReceiptView.styles';
+import { View } from 'react-native';
 import { Button, Divider, Icon, Text } from 'react-native-paper';
-import { colors } from '../../theme';
-import { formatMoney } from './money';
-import type { TransferReceipt } from './types';
+import { colors } from '../../../theme/tokens';
+import { formatMoney } from '../domain/money';
+import type { TransferReceipt } from '../domain/types';
 
 export function TransferReceiptView({
   receipt,
@@ -68,19 +69,3 @@ function Detail({ label, value }: { label: string; value: string }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: { gap: 20 },
-  check: { alignSelf: 'center', borderRadius: 40, backgroundColor: '#E1F1E9', padding: 20 },
-  title: { textAlign: 'center', fontWeight: '700', color: colors.ink },
-  card: {
-    padding: 24,
-    gap: 18,
-    backgroundColor: colors.surface,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.line,
-  },
-  detail: { gap: 6 },
-  muted: { color: colors.muted },
-  button: { minHeight: 52 },
-});

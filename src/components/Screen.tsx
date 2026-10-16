@@ -1,7 +1,7 @@
+import { styles } from './Screen.styles';
 import type { PropsWithChildren } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../theme';
 
 export function Screen({ children }: PropsWithChildren) {
   return (
@@ -17,8 +17,3 @@ export function Screen({ children }: PropsWithChildren) {
     </SafeAreaView>
   );
 }
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  content: { flexGrow: 1, padding: 24, paddingBottom: 32 },
-  inner: { width: '100%', maxWidth: 600, alignSelf: 'center', gap: 24, flex: 1 },
-});

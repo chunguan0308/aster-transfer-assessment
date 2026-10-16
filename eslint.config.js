@@ -11,6 +11,15 @@ module.exports = defineConfig([
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       'no-console': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'JSXAttribute[name.name=/^(style|contentStyle|contentContainerStyle|labelStyle)$/] ObjectExpression',
+          message:
+            'Keep native styles in the adjacent *.styles.ts file; use named styles or a data-driven style function.',
+        },
+      ],
     },
   },
   {

@@ -1,4 +1,4 @@
-import type { Account, Recipient } from './types';
+import type { Account, Recipient } from '../domain/types';
 
 export const initialAccount: Account = {
   id: 'aster-current',

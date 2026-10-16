@@ -1,6 +1,6 @@
 import * as LocalAuthentication from 'expo-local-authentication';
-import { formatMoney } from '../transfers/money';
-import type { Recipient, TransferDraft } from '../transfers/types';
+import { formatMoney } from '../../transfers/domain/money';
+import type { Recipient, TransferDraft } from '../../transfers/domain/types';
 
 export class AuthenticationError extends Error {
   constructor(

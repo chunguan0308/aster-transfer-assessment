@@ -1,12 +1,10 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
-import { theme } from '../theme';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { theme } from '../theme/paperTheme';
+import { QueryClientProvider } from '@tanstack/react-query';
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 10000 } },
-});
+import { queryClient } from '../config/queryClient';
 
 export default function RootLayout() {
   return (

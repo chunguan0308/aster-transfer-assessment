@@ -1,5 +1,5 @@
-import { amountInput, formatMoney, parseAmount } from '../src/features/transfers/money';
-import { transferSchema } from '../src/features/transfers/validation';
+import { amountInput, formatMoney, parseAmount } from '../src/features/transfers/domain/money';
+import { transferSchema } from '../src/features/transfers/domain/validation';
 
 test.each([
   ['0.01', 1],

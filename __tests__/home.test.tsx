@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initialAccount as mockInitialAccount } from '../src/features/transfers/fixtures';
+import { initialAccount as mockInitialAccount } from '../src/features/transfers/constants/demoData';
 import { PaperProvider } from 'react-native-paper';
-import HomeScreen from '../src/app/index';
-import { theme } from '../src/theme';
+import HomeScreen from '../src/features/transfers/screens/TransferScreen';
+import { theme } from '../src/theme/paperTheme';
 
 jest.mock(
   'react-native-safe-area-context',
@@ -14,7 +14,7 @@ jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => ({
   __esModule: true,
   default: jest.requireActual('react-native').Text,
 }));
-jest.mock('../src/features/transfers/api', () => ({
+jest.mock('../src/features/transfers/services/transferApi', () => ({
   getLedger: async () => ({ account: async () => mockInitialAccount }),
   recoverPending: async () => null,
 }));
