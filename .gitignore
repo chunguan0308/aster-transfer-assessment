@@ -1,8 +1,34 @@
+# Dependencies and generated native projects
+node_modules/
+/android/
+/ios/
+
+# Expo, builds, tests, and local index
+.expo/
+.codegraph/
+dist/
+web-build/
+coverage/
+artifacts/
+expo-env.d.ts
+*.tsbuildinfo
+.kotlin/
+.metro-health-check*
+
+# Local configuration, confidential source, and credentials
 .DS_Store
 .env
 .env.*
 !.env.example
 *.pdf
+*.log
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
 
 # Local development coordination (not part of the submission)
 /AGENTS.md

@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+.codegraph/
+android/
+ios/
+coverage/
+dist/
+artifacts/
+package-lock.json

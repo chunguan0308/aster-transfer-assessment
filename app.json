@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Aster Transfer",
+    "slug": "aster-transfer",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "astertransfer",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.aster.assessment.transfer",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.aster.assessment.transfer",
+      "adaptiveIcon": {
+        "backgroundColor": "#E8F5F1",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "blockedPermissions": ["android.permission.WRITE_CONTACTS"]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-sqlite",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Use Face ID to authorize your payment transfer."
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Select a contact as a payment recipient."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

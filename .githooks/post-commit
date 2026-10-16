@@ -1,0 +1,4 @@
+#!/bin/sh
+if [ -d .codegraph ] && [ -x node_modules/.bin/codegraph ]; then
+  node_modules/.bin/codegraph sync --quiet || printf '%s\n' 'CodeGraph sync failed; run npm run graph:sync before code discovery.' >&2
+fi
