@@ -1,0 +1,21 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+*.pdf
+
+# Local development coordination (not part of the submission)
+/AGENTS.md
+/docs/ASSESSMENT.md
+/docs/DEVELOPMENT_LOG.md
+/docs/FINAL_REVIEW.md
+
+# Local review, audit and acceptance records
+/docs/PERFORMANCE.md
+/docs/SECURITY.md
+/docs/VERIFICATION.md
+/docs/media/demo-ios.json
+/docs/media/performance-history.png
+/docs/native-acceptance.json
+/docs/performance-measurements.json
+/docs/release-manifest.json
