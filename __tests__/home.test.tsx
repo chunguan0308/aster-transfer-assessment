@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initialAccount as mockInitialAccount } from '../src/features/transfers/constants/demoData';
+import { AppState } from 'react-native';
+import { authorizeTransfer } from '../src/features/auth/services/authorize';
+import {
+  initialAccount as mockInitialAccount,
+  recipients,
+} from '../src/features/transfers/constants/demoData';
 import { PaperProvider } from 'react-native-paper';
 import HomeScreen from '../src/features/transfers/screens/TransferScreen';
 import { theme } from '../src/theme/paperTheme';
@@ -21,14 +26,43 @@ jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => ({
   default: jest.requireActual('react-native').Text,
 }));
 jest.mock('../src/features/transfers/services/transferApi', () => ({
-  getLedger: async () => ({ account: async () => mockInitialAccount }),
+  getLedger: async () => ({
+    account: async () => mockInitialAccount,
+    history: async () => ({ items: [mockReceipt] }),
+    savePending: async () => undefined,
+    clearPending: async () => undefined,
+  }),
+  submitTransfer: async () => mockReceipt,
   recoverPending: async () => null,
 }));
+
+jest.mock('../src/features/auth/services/authorize', () => ({
+  ...jest.requireActual('../src/features/auth/services/authorize'),
+  authorizeTransfer: jest.fn(async () => undefined),
+}));
+const mockReceipt = {
+  recipientId: 'aisha',
+  amountMinor: 12345,
+  note: 'Dinner',
+  id: 'AST-1',
+  idempotencyKey: '00000000-0000-4000-8000-000000000001',
+  recipient: recipients[0],
+  createdAt: '2026-10-16T00:00:00Z',
+  balanceAfterMinor: 1237655,
+  status: 'completed' as const,
+};
 
 test('validates the form, reviews exact details, and restores values when editing', async () => {
   await render(
     <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } })}
+      client={
+        new QueryClient({
+          defaultOptions: {
+            queries: { retry: false, gcTime: Infinity },
+            mutations: { gcTime: Infinity },
+          },
+        })
+      }
     >
       <PaperProvider theme={theme}>
         <HomeScreen />
@@ -47,4 +81,42 @@ test('validates the form, reviews exact details, and restores values when editin
   expect(screen.getByText('Dinner')).toBeOnTheScreen();
   await fireEvent.press(screen.getByText('Edit details'));
   expect(screen.getByLabelText('Amount in Malaysian ringgit')).toHaveDisplayValue('123.45');
+});
+
+test('history resend prefills an editable form and requires new authorization', async () => {
+  AppState.currentState = 'active';
+  await render(
+    <QueryClientProvider
+      client={
+        new QueryClient({
+          defaultOptions: {
+            queries: { retry: false, gcTime: Infinity },
+            mutations: { gcTime: Infinity },
+          },
+        })
+      }
+    >
+      <PaperProvider theme={theme}>
+        <HomeScreen />
+      </PaperProvider>
+    </QueryClientProvider>,
+  );
+  await fireEvent.press(await screen.findByText('View activity'));
+  await fireEvent.press(await screen.findByRole('button', { name: /Aisha Rahman, sent/ }));
+  await fireEvent.press(screen.getByText('Send again'));
+  expect(screen.getByLabelText('Amount in Malaysian ringgit')).toHaveDisplayValue('123.45');
+  expect(screen.getByLabelText('Note (optional)')).toHaveDisplayValue('Dinner');
+  expect(authorizeTransfer).not.toHaveBeenCalled();
+  await fireEvent.press(screen.getByText('Review transfer'));
+  await fireEvent.press(screen.getByText('Authorize & send'));
+  expect(await screen.findByText('Money sent.')).toBeOnTheScreen();
+  expect(authorizeTransfer).toHaveBeenCalledTimes(1);
+  await fireEvent.press(screen.getByText('Done'));
+  await fireEvent.press(screen.getByText('View activity'));
+  await fireEvent.press(await screen.findByRole('button', { name: /Aisha Rahman, sent/ }));
+  await fireEvent.press(screen.getByText('Send again'));
+  await fireEvent.press(screen.getByText('Review transfer'));
+  await fireEvent.press(screen.getByText('Authorize & send'));
+  expect(await screen.findByText('Money sent.')).toBeOnTheScreen();
+  expect(authorizeTransfer).toHaveBeenCalledTimes(2);
 });

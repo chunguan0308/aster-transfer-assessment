@@ -1,5 +1,6 @@
 import { styles } from './TransferScreen.styles';
 import { useState } from 'react';
+import { HistoryModal } from '../components/HistoryModal';
 import { Linking, View } from 'react-native';
 import { ActivityIndicator, Button, Icon, Text } from 'react-native-paper';
 import { Screen } from '../../../components/Screen';
@@ -22,6 +23,8 @@ export default function TransferScreen() {
   const transfer = useTransfer();
   const [draft, setDraft] = useState<TransferDraft>();
   const [reviewing, setReviewing] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [formVersion, setFormVersion] = useState(0);
   const recipient = recipients.find((item) => item.id === draft?.recipientId);
   const receipt = transfer.receipt ?? recovery.data;
   if (account.isPending || recovery.isPending)
@@ -136,7 +139,11 @@ export default function TransferScreen() {
               Available balance · •••• {currentAccount.accountNumber.slice(-4)}
             </Text>
           </View>
+          <Button icon="history" onPress={() => setHistoryOpen(true)}>
+            View activity
+          </Button>
           <TransferForm
+            key={formVersion}
             account={currentAccount}
             initialValues={
               draft
@@ -153,6 +160,22 @@ export default function TransferScreen() {
             }}
           />
         </>
+      )}
+      {historyOpen && (
+        <HistoryModal
+          onClose={() => setHistoryOpen(false)}
+          onRepeat={(previous) => {
+            transfer.reset();
+            setDraft({
+              recipientId: previous.recipientId,
+              amountMinor: previous.amountMinor,
+              note: previous.note,
+            });
+            setReviewing(false);
+            setFormVersion((version) => version + 1);
+            setHistoryOpen(false);
+          }}
+        />
       )}
       <View style={styles.bottom}>
         <Icon source="lock-outline" color={colors.muted} size={16} />
