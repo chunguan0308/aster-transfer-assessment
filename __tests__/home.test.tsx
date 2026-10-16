@@ -4,6 +4,12 @@ import { initialAccount as mockInitialAccount } from '../src/features/transfers/
 import { PaperProvider } from 'react-native-paper';
 import HomeScreen from '../src/features/transfers/screens/TransferScreen';
 import { theme } from '../src/theme/paperTheme';
+jest.mock('../src/features/contacts/services/deviceContacts', () => ({
+  contactPermission: jest.fn(),
+  loadContacts: jest.fn(),
+  requestContactPermission: jest.fn(),
+  manageLimitedContacts: jest.fn(),
+}));
 
 jest.mock(
   'react-native-safe-area-context',

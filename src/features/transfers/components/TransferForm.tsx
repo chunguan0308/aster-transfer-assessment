@@ -1,4 +1,6 @@
 import { styles } from './TransferForm.styles';
+import { useState } from 'react';
+import { ContactPicker } from '../../contacts/components/ContactPicker';
 import { Controller } from 'react-hook-form';
 import { Keyboard, Pressable, ScrollView, View } from 'react-native';
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
@@ -16,6 +18,7 @@ interface Props {
   onReview: (draft: TransferDraft) => void;
 }
 export function TransferForm({ account, initialValues, onReview }: Props) {
+  const [contactsOpen, setContactsOpen] = useState(false);
   const { control, errors, recipientId, recipient, selectRecipient, review } = useTransferForm(
     account.balanceMinor,
     initialValues,
@@ -29,7 +32,12 @@ export function TransferForm({ account, initialValues, onReview }: Props) {
         </Text>
         <Text variant="bodyMedium">Instant · No fees</Text>
       </View>
-      <Text variant="labelLarge">Choose a recipient</Text>
+      <View style={styles.heading}>
+        <Text variant="labelLarge">Choose a recipient</Text>
+        <Button compact icon="account-box-outline" onPress={() => setContactsOpen(true)}>
+          From contacts
+        </Button>
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -125,6 +133,15 @@ export function TransferForm({ account, initialValues, onReview }: Props) {
       <Button mode="contained" contentStyle={styles.button} onPress={review}>
         Review transfer
       </Button>
+      {contactsOpen && (
+        <ContactPicker
+          onSelect={(id) => {
+            selectRecipient(id);
+            setContactsOpen(false);
+          }}
+          onClose={() => setContactsOpen(false)}
+        />
+      )}
       <Text variant="bodySmall" style={styles.footer}>
         You’ll review the details before authorizing.
       </Text>
