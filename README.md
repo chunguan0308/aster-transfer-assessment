@@ -38,7 +38,7 @@ npm run android
 npm run ios
 ```
 
-These commands generate and compile native projects locally. Generated `android/` and `ios/` folders are excluded from Git; native configuration belongs in Expo configuration and config plugins. After the first build, use `npm start` for JavaScript changes. No Expo cloud account is required for local builds.
+These commands generate and compile native projects locally. Generated `android/` and `ios/` folders are excluded from Git; native configuration belongs in Expo configuration and config plugins. After the first build, use `npm start` for JavaScript changes. No Expo cloud account is required for local builds. On Xcode 27, use Device Hub to view simulators. If port 8081 is occupied, pass `--port 8082` to the native run command or `npm start -- --port 8082`; use the same port for Metro and the development client.
 
 ## Code navigation
 
@@ -54,4 +54,4 @@ npx codegraph explore "RootLayout HomeScreen"
 
 ## Verification status
 
-The foundation quality checks and CodeGraph retrieval have passed; native installation/build validation is in progress. Expo Doctor passes with an explicit Jest 30 compatibility exception in package configuration. The dependency audit reports four unresolved upstream advisories; the security audit is not clean. There is no claim of completed banking functionality or production security.
+A clean dependency installation, foundation quality checks, and CodeGraph retrieval have passed. Android ARM64 Debug and iOS ARM64 Simulator Debug/Release builds passed; both simulator foundation screens were observed. Business flows and physical-device biometric verification remain pending. Expo Doctor passes with an explicit Jest 30 compatibility exception in package configuration. The dependency audit reports four unresolved upstream advisories; the security audit is not clean. There is no claim of completed banking functionality or production security.
