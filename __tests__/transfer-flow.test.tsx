@@ -117,7 +117,9 @@ test('does not send when the app is backgrounded after authorization', async () 
   await act(async () => {
     result.current.send(draft, recipients[0], 'normal');
   });
-  await waitFor(() => expect(result.current.error).toBeInstanceOf(AuthenticationError));
+  await waitFor(() => expect(result.current.error).toBeInstanceOf(AuthenticationError), {
+    timeout: 3000,
+  });
   expect(submit).not.toHaveBeenCalled();
 });
 test('a lost response permits a read-only status check, without reauth or a second submission', async () => {
@@ -159,4 +161,24 @@ test('a cleanup/storage failure preserves reconciliation and cannot silently ena
   await waitFor(() => expect(result.current.unresolved).toBe(true));
   expect(result.current.receipt).toBeUndefined();
   expect(result.current.error?.message).toMatch(/Check the transfer status/);
+});
+
+test('unmounting during pending-attempt persistence cannot start a transfer', async () => {
+  let saved!: () => void;
+  mockLedger.savePending.mockImplementationOnce(
+    () =>
+      new Promise<void>((resolve) => {
+        saved = resolve;
+      }),
+  );
+  const { result, unmount } = await renderHook(() => useTransfer(), { wrapper });
+  await act(async () => {
+    result.current.send(draft, recipients[0], 'normal');
+  });
+  await unmount();
+  await act(async () => {
+    saved();
+  });
+  expect(submit).not.toHaveBeenCalled();
+  expect(mockLedger.clearPending).toHaveBeenCalled();
 });

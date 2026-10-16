@@ -8,7 +8,7 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 import { ActivityIndicator, Button, IconButton, Text } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { formatMoney } from '../domain/money';
 import type { TransferReceipt } from '../domain/types';
 import { useHistory } from '../hooks/useHistory';
@@ -38,107 +38,111 @@ export function HistoryModal({
   };
   return (
     <Modal visible animationType="slide" presentationStyle="fullScreen" onRequestClose={back}>
-      <SafeAreaView style={styles.safe} accessibilityViewIsModal>
-        <View style={styles.header}>
-          {selected && (
-            <IconButton
-              icon="arrow-left"
-              accessibilityLabel="Back to activity"
-              onPress={() => setSelected(null)}
-            />
-          )}
-          <Text variant="headlineSmall" accessibilityRole="header" style={styles.title}>
-            {selected ? 'Transfer details' : 'Activity'}
-          </Text>
-          <IconButton icon="close" accessibilityLabel="Close activity" onPress={onClose} />
-        </View>
-        {selected ? (
-          <ScrollView contentContainerStyle={styles.receipt}>
-            <TransferReceiptView
-              receipt={selected}
-              onDone={() => setSelected(null)}
-              onRepeat={() => onRepeat(selected)}
-            />
-          </ScrollView>
-        ) : (
-          <>
-            <Text style={styles.introduction}>Your completed transfers, saved on this device.</Text>
-            {history.isError && receipts.length > 0 && (
-              <View style={styles.empty}>
-                <Text accessibilityRole="alert">
-                  Couldn’t refresh activity. Your saved transfers are still shown.
-                </Text>
-                <Button
-                  onPress={() => {
-                    void history.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              </View>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safe} accessibilityViewIsModal>
+          <View style={styles.header}>
+            {selected && (
+              <IconButton
+                icon="arrow-left"
+                accessibilityLabel="Back to activity"
+                onPress={() => setSelected(null)}
+              />
             )}
-            <FlatList
-              style={styles.list}
-              data={receipts}
-              renderItem={renderItem}
-              keyExtractor={receiptKey}
-              initialNumToRender={12}
-              maxToRenderPerBatch={12}
-              windowSize={7}
-              refreshing={history.isRefetching && !history.isFetchingNextPage}
-              onRefresh={() => {
-                void history.refetch();
-              }}
-              onEndReachedThreshold={0.4}
-              onEndReached={() => {
-                if (history.hasNextPage && !history.isFetching) void history.fetchNextPage();
-              }}
-              ListEmptyComponent={
+            <Text variant="headlineSmall" accessibilityRole="header" style={styles.title}>
+              {selected ? 'Transfer details' : 'Activity'}
+            </Text>
+            <IconButton icon="close" accessibilityLabel="Close activity" onPress={onClose} />
+          </View>
+          {selected ? (
+            <ScrollView contentContainerStyle={styles.receipt}>
+              <TransferReceiptView
+                receipt={selected}
+                onDone={() => setSelected(null)}
+                onRepeat={() => onRepeat(selected)}
+              />
+            </ScrollView>
+          ) : (
+            <>
+              <Text style={styles.introduction}>
+                Your completed transfers, saved on this device.
+              </Text>
+              {history.isError && receipts.length > 0 && (
                 <View style={styles.empty}>
-                  {history.isPending ? (
-                    <ActivityIndicator accessibilityLabel="Loading activity" />
-                  ) : history.isError ? (
-                    <>
-                      <Text accessibilityRole="alert">Couldn’t load activity.</Text>
-                      <Button
-                        onPress={() => {
-                          void history.refetch();
-                        }}
-                      >
-                        Try again
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Text variant="titleLarge">Your first transfer starts here.</Text>
-                      <Text>
-                        Completed transfers will appear here with a receipt and a quick way to send
-                        again.
-                      </Text>
-                      <Button mode="contained" onPress={onClose}>
-                        Make a transfer
-                      </Button>
-                    </>
-                  )}
-                </View>
-              }
-              ListFooterComponent={
-                history.isFetchingNextPage ? (
-                  <ActivityIndicator style={styles.footer} />
-                ) : history.isFetchNextPageError ? (
+                  <Text accessibilityRole="alert">
+                    Couldn’t refresh activity. Your saved transfers are still shown.
+                  </Text>
                   <Button
                     onPress={() => {
-                      void history.fetchNextPage();
+                      void history.refetch();
                     }}
                   >
-                    Retry loading more
+                    Try again
                   </Button>
-                ) : undefined
-              }
-            />
-          </>
-        )}
-      </SafeAreaView>
+                </View>
+              )}
+              <FlatList
+                style={styles.list}
+                data={receipts}
+                renderItem={renderItem}
+                keyExtractor={receiptKey}
+                initialNumToRender={12}
+                maxToRenderPerBatch={12}
+                windowSize={7}
+                refreshing={history.isRefetching && !history.isFetchingNextPage}
+                onRefresh={() => {
+                  void history.refetch();
+                }}
+                onEndReachedThreshold={0.4}
+                onEndReached={() => {
+                  if (history.hasNextPage && !history.isFetching) void history.fetchNextPage();
+                }}
+                ListEmptyComponent={
+                  <View style={styles.empty}>
+                    {history.isPending ? (
+                      <ActivityIndicator accessibilityLabel="Loading activity" />
+                    ) : history.isError ? (
+                      <>
+                        <Text accessibilityRole="alert">Couldn’t load activity.</Text>
+                        <Button
+                          onPress={() => {
+                            void history.refetch();
+                          }}
+                        >
+                          Try again
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Text variant="titleLarge">Your first transfer starts here.</Text>
+                        <Text>
+                          Completed transfers will appear here with a receipt and a quick way to
+                          send again.
+                        </Text>
+                        <Button mode="contained" onPress={onClose}>
+                          Make a transfer
+                        </Button>
+                      </>
+                    )}
+                  </View>
+                }
+                ListFooterComponent={
+                  history.isFetchingNextPage ? (
+                    <ActivityIndicator style={styles.footer} />
+                  ) : history.isFetchNextPageError ? (
+                    <Button
+                      onPress={() => {
+                        void history.fetchNextPage();
+                      }}
+                    >
+                      Retry loading more
+                    </Button>
+                  ) : undefined
+                }
+              />
+            </>
+          )}
+        </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   );
 }

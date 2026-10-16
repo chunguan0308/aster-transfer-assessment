@@ -53,7 +53,7 @@ export default function TransferScreen() {
     );
   const currentAccount = account.data;
   return (
-    <Screen>
+    <Screen scrollKey={receipt?.id ?? (reviewing ? 'review' : `form-${formVersion}`)}>
       <View style={styles.header}>
         <View style={styles.brand}>
           <Icon source="asterisk" color={colors.primary} size={30} />

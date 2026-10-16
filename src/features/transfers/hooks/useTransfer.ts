@@ -1,3 +1,4 @@
+import { waitForForeground } from '../../auth/services/foreground';
 import { queryKeys } from '../constants/queryKeys';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as Crypto from 'expo-crypto';
@@ -57,7 +58,7 @@ export function useTransfer() {
       }
       if (scope.active) setPhase('authorizing');
       await authorizeTransfer(draft, recipient);
-      if (!scope.active || AppState.currentState !== 'active')
+      if (!scope.active || !(await waitForForeground()) || !scope.active)
         throw new AuthenticationError(
           'cancelled',
           'Return to Aster and authorize the transfer again. No money was sent.',
@@ -67,19 +68,31 @@ export function useTransfer() {
       attemptRef.current = attempt;
       if (scope.active) setPhase('sending');
       try {
+        if (!scope.active || AppState.currentState !== 'active')
+          throw new AuthenticationError(
+            'cancelled',
+            'Authorization expired while leaving Aster. No money was sent.',
+          );
         const receipt = await submitTransfer(attempt, simulation);
         await ledger.clearPending(attempt.idempotencyKey);
         attemptRef.current = null;
         return receipt;
       } catch (error) {
-        if (error instanceof TransferError && error.kind !== 'uncertain') {
+        if (
+          error instanceof AuthenticationError ||
+          (error instanceof TransferError && error.kind !== 'uncertain')
+        ) {
           try {
             await ledger.clearPending(attempt.idempotencyKey);
-            attemptRef.current = null;
-            throw error;
-          } catch (cleanupError) {
-            if (cleanupError === error) throw error;
+          } catch {
+            if (scope.active) setUnresolved(true);
+            throw new TransferError(
+              'uncertain',
+              'We couldn’t save the transfer status. Check the transfer status before trying again.',
+            );
           }
+          attemptRef.current = null;
+          throw error;
         }
         if (scope.active) setUnresolved(true);
         throw new TransferError(
