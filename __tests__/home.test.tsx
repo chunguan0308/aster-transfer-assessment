@@ -1,4 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { initialAccount as mockInitialAccount } from '../src/features/transfers/fixtures';
 import { PaperProvider } from 'react-native-paper';
 import HomeScreen from '../src/app/index';
 import { theme } from '../src/theme';
@@ -8,13 +10,26 @@ jest.mock(
   () => jest.requireActual('react-native-safe-area-context/jest/mock').default,
 );
 
+jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => ({
+  __esModule: true,
+  default: jest.requireActual('react-native').Text,
+}));
+jest.mock('../src/features/transfers/api', () => ({
+  getLedger: async () => ({ account: async () => mockInitialAccount }),
+  recoverPending: async () => null,
+}));
+
 test('validates the form, reviews exact details, and restores values when editing', async () => {
   await render(
-    <PaperProvider theme={theme}>
-      <HomeScreen />
-    </PaperProvider>,
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } })}
+    >
+      <PaperProvider theme={theme}>
+        <HomeScreen />
+      </PaperProvider>
+    </QueryClientProvider>,
   );
-  expect(screen.getByRole('header', { name: 'aster' })).toBeOnTheScreen();
+  expect(await screen.findByRole('header', { name: 'aster' })).toBeOnTheScreen();
   await fireEvent.press(screen.getByText('Review transfer'));
   expect(await screen.findByText('Choose a recipient to continue.')).toBeOnTheScreen();
   await fireEvent.press(screen.getByRole('radio', { name: 'Aisha Rahman' }));

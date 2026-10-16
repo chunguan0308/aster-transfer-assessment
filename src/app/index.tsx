@@ -1,18 +1,60 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Icon, Text } from 'react-native-paper';
+import { Linking, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Button, Icon, Text } from 'react-native-paper';
 import { Screen } from '../components/Screen';
-import { initialAccount, recipients } from '../features/transfers/fixtures';
+import { recipients } from '../features/transfers/fixtures';
 import { formatMoney, amountInput } from '../features/transfers/money';
 import { ReviewTransfer } from '../features/transfers/ReviewTransfer';
 import { TransferForm } from '../features/transfers/TransferForm';
 import type { TransferDraft } from '../features/transfers/types';
 import { colors } from '../theme';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getLedger, recoverPending } from '../features/transfers/api';
+import { useTransfer } from '../features/transfers/useTransfer';
+import { TransferReceiptView } from '../features/transfers/TransferReceiptView';
+import { AuthenticationError } from '../features/auth/authorize';
 
 export default function HomeScreen() {
+  const client = useQueryClient();
+  const account = useQuery({
+    queryKey: ['account'],
+    queryFn: async () => (await getLedger()).account(),
+  });
+  const recovery = useQuery({
+    queryKey: ['recovery'],
+    queryFn: recoverPending,
+    staleTime: Infinity,
+  });
+  const transfer = useTransfer();
   const [draft, setDraft] = useState<TransferDraft>();
   const [reviewing, setReviewing] = useState(false);
   const recipient = recipients.find((item) => item.id === draft?.recipientId);
+  const receipt = transfer.receipt ?? recovery.data;
+  if (account.isPending || recovery.isPending)
+    return (
+      <Screen>
+        <ActivityIndicator accessibilityLabel="Loading your account" />
+        <Text>Getting things ready…</Text>
+      </Screen>
+    );
+  if (account.isError || recovery.isError || !account.data)
+    return (
+      <Screen>
+        <Text variant="headlineSmall" accessibilityRole="header">
+          We couldn’t open your account.
+        </Text>
+        <Text>Your saved data hasn’t been reset. Please try again.</Text>
+        <Button
+          onPress={() => {
+            void account.refetch();
+            void recovery.refetch();
+          }}
+        >
+          Try again
+        </Button>
+      </Screen>
+    );
+  const currentAccount = account.data;
   return (
     <Screen>
       <View style={styles.header}>
@@ -26,30 +68,82 @@ export default function HomeScreen() {
           <Text variant="labelSmall">DEMO ACCOUNT</Text>
         </View>
       </View>
-      {reviewing && draft && recipient ? (
-        <ReviewTransfer draft={draft} recipient={recipient} onEdit={() => setReviewing(false)} />
+      {receipt ? (
+        <TransferReceiptView
+          receipt={receipt}
+          onDone={() => {
+            transfer.reset();
+            client.setQueryData(['recovery'], null);
+            setDraft(undefined);
+            setReviewing(false);
+          }}
+        />
+      ) : reviewing && draft && recipient ? (
+        <ReviewTransfer
+          draft={draft}
+          recipient={recipient}
+          busy={transfer.busy || transfer.unresolved}
+          onEdit={() => {
+            transfer.reset();
+            setReviewing(false);
+          }}
+        >
+          {transfer.error && (
+            <Text accessibilityRole="alert" style={{ color: colors.ink }}>
+              {transfer.error.message}
+            </Text>
+          )}
+          {transfer.error instanceof AuthenticationError && transfer.error.kind === 'setup' && (
+            <Button
+              onPress={() => {
+                void Linking.openSettings();
+              }}
+            >
+              Open device settings
+            </Button>
+          )}
+          <Button
+            icon="fingerprint"
+            mode="contained"
+            loading={transfer.busy}
+            disabled={transfer.busy}
+            contentStyle={{ minHeight: 54 }}
+            onPress={() => transfer.send(draft, recipient, 'normal')}
+          >
+            {transfer.busy
+              ? transfer.phase === 'authorizing'
+                ? 'Waiting for authorization…'
+                : transfer.phase === 'checking'
+                  ? 'Checking status…'
+                  : 'Sending securely…'
+              : transfer.unresolved
+                ? 'Check transfer status'
+                : 'Authorize & send'}
+          </Button>
+          <Text variant="bodySmall">Confirm with biometrics or your device passcode.</Text>
+        </ReviewTransfer>
       ) : (
         <>
           <View style={styles.balance}>
             <View style={styles.balanceHeader}>
               <Text style={styles.balanceLabel} variant="labelLarge">
-                {initialAccount.name}
+                {currentAccount.name}
               </Text>
               <Icon source="shield-check-outline" color="#A2D8BE" size={22} />
             </View>
             <Text
               style={styles.balanceValue}
               variant="displaySmall"
-              accessibilityLabel={`Available balance ${formatMoney(initialAccount.balanceMinor)}`}
+              accessibilityLabel={`Available balance ${formatMoney(currentAccount.balanceMinor)}`}
             >
-              {formatMoney(initialAccount.balanceMinor)}
+              {formatMoney(currentAccount.balanceMinor)}
             </Text>
             <Text style={styles.balanceLabel} variant="bodySmall">
-              Available balance · •••• {initialAccount.accountNumber.slice(-4)}
+              Available balance · •••• {currentAccount.accountNumber.slice(-4)}
             </Text>
           </View>
           <TransferForm
-            account={initialAccount}
+            account={currentAccount}
             initialValues={
               draft
                 ? {

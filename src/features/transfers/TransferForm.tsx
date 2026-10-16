@@ -87,6 +87,7 @@ export function TransferForm({ account, initialValues, onReview }: Props) {
               error={!!errors.amount}
               maxLength={18}
               style={styles.amountInput}
+              contentStyle={{ fontSize: 30 }}
               left={<TextInput.Affix text="RM" />}
               placeholder="0.00"
             />
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   selected: { borderColor: colors.primary, backgroundColor: '#E8F2EC' },
   destination: { borderLeftColor: colors.primary, borderLeftWidth: 3, paddingLeft: 12, gap: 4 },
   amount: { gap: 4 },
-  amountInput: { fontSize: 30, backgroundColor: colors.surface },
+  amountInput: { backgroundColor: colors.surface },
   hint: { paddingHorizontal: 12, color: colors.muted },
   button: { minHeight: 54 },
   footer: { textAlign: 'center', color: colors.muted },
