@@ -15,7 +15,7 @@ The confidential assessment PDF is excluded from Git. Both stretch goals are par
 
 ## Run locally
 
-Use Node 24 from `.nvmrc`. Android needs Android Studio, the Android SDK and JDK 17; iOS needs macOS, Xcode with a Simulator runtime, and CocoaPods. A device/emulator must have a screen lock or enrolled biometrics to complete a transfer. Keep SDK-compatible dependency versions together.
+Use Node 24 from `.nvmrc`. Android needs Android Studio, the Android SDK and JDK 17; iOS needs macOS, Xcode with a Simulator runtime, and CocoaPods. A device/emulator must have a screen lock or enrolled biometrics to complete a transfer. Keep SDK-compatible dependency versions together. The repository uses the public npm registry; no private packages or registry credentials are required.
 
 ```sh
 nvm install
