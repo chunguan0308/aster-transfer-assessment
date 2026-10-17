@@ -33,6 +33,16 @@ npm run ios
 
 These commands build native development clients. Expo Go and web previews are not acceptance targets. No Expo cloud account is needed. Generated `android/` and `ios/` projects are ignored; change native configuration through `app.json` and config plugins. Do not commit SDK paths or signing credentials.
 
+For a standalone local Release build (no Metro at launch):
+
+```sh
+npm run android -- --variant release
+# macOS iOS Simulator:
+npm run ios -- --configuration Release
+```
+
+The generated Android APK is under `android/app/build/outputs/apk/release/`. This assessment build uses the generated development signing certificate; production/store signing is separate. The iOS target above is a Simulator build, not a distributable signed IPA.
+
 After the first build, `npm start` starts Metro. If 8081 is occupied, use `npm run android -- --port 8082` (or `ios`) and `npm start -- --port 8082`. On Xcode 27 the simulator UI is in Device Hub.
 
 **Android Studio:** use a checkout path without spaces, such as `aster-transfer`. Expo Modules Core's IDE helper splits compiler paths on spaces. A separate clean, space-free checkout passed install, checks, native generation, the IDE helper and ARM64 Release build. Full Studio UI sync remains unverified; command-line builds also work in the original path.
@@ -49,7 +59,7 @@ After the first build, `npm start` starts Metro. If 8081 is occupied, use `npm r
 
 <img src="docs/media/transfer-home.png" alt="Aster native transfer form and available balance" width="280" />
 
-The Android physical-device demonstration and final distributable remain pending.
+The Android physical-device demonstration is pending. Installable binaries stay outside Git.
 
 ## Structure and decisions
 
