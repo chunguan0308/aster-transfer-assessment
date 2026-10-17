@@ -13,12 +13,18 @@
     },
     "android": {
       "package": "com.aster.assessment.transfer",
+      "allowBackup": false,
       "adaptiveIcon": {
         "backgroundColor": "#E8F5F1",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "blockedPermissions": ["android.permission.WRITE_CONTACTS"]
+      "blockedPermissions": [
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
     },
     "plugins": [
       "expo-router",
