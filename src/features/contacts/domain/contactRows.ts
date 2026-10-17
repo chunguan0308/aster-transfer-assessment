@@ -1,5 +1,5 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import { recipients } from '../../transfers/constants/demoData';
+import { recipients } from '@/features/transfers/constants/demoData';
 
 export interface DeviceContact {
   id: string;

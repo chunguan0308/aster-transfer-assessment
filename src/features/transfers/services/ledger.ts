@@ -1,8 +1,8 @@
-import { MAX_NOTE_LENGTH, HISTORY_PAGE_SIZE } from '../constants/limits';
+import { MAX_NOTE_LENGTH, HISTORY_PAGE_SIZE } from '@/features/transfers/constants/limits';
 import { z } from 'zod';
-import { TransferError } from '../domain/errors';
-import { initialAccount, recipients } from '../constants/demoData';
-import type { Account, TransferDraft, TransferReceipt } from '../domain/types';
+import { TransferError } from '@/features/transfers/domain/errors';
+import { initialAccount, recipients } from '@/features/transfers/constants/demoData';
+import type { Account, TransferDraft, TransferReceipt } from '@/features/transfers/domain/types';
 
 type SqlValue = string | number | null;
 export interface LedgerConnection {

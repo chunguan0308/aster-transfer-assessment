@@ -1,7 +1,7 @@
-import { MAX_NOTE_LENGTH } from '../constants/limits';
+import { MAX_NOTE_LENGTH } from '@/features/transfers/constants/limits';
 import { z } from 'zod';
 
-import { parseAmount } from './money';
+import { parseAmount } from '@/features/transfers/domain/money';
 
 export function transferSchema(balanceMinor: number) {
   return z.object({

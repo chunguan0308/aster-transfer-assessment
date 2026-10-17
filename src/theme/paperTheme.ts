@@ -1,6 +1,6 @@
 import { MD3LightTheme } from 'react-native-paper';
 
-import { colors } from './tokens';
+import { colors } from '@/theme/tokens';
 
 export const theme = {
   ...MD3LightTheme,

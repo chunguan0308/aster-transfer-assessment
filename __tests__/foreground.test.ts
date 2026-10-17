@@ -1,5 +1,5 @@
 import { AppState, type AppStateStatus } from 'react-native';
-import { waitForForeground } from '../src/features/auth/services/foreground';
+import { waitForForeground } from '@/features/auth/services/foreground';
 
 beforeEach(() => jest.useFakeTimers());
 afterEach(() => {

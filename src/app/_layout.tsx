@@ -1,10 +1,10 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
-import { theme } from '../theme/paperTheme';
+import { theme } from '@/theme/paperTheme';
 import { QueryClientProvider } from '@tanstack/react-query';
 
-import { queryClient } from '../config/queryClient';
+import { queryClient } from '@/config/queryClient';
 
 export default function RootLayout() {
   return (

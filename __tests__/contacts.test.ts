@@ -1,4 +1,4 @@
-import { contactRows, normalizePhone } from '../src/features/contacts/domain/contactRows';
+import { contactRows, normalizePhone } from '@/features/contacts/domain/contactRows';
 
 test('normalizes international and Malaysian numbers without matching names', () => {
   expect(normalizePhone('(202) 555-0101')).not.toBe('+12025550101');

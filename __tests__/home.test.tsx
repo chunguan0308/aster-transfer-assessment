@@ -1,15 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppState } from 'react-native';
-import { authorizeTransfer } from '../src/features/auth/services/authorize';
+import { authorizeTransfer } from '@/features/auth/services/authorize';
 import {
   initialAccount as mockInitialAccount,
   recipients,
-} from '../src/features/transfers/constants/demoData';
+} from '@/features/transfers/constants/demoData';
 import { PaperProvider } from 'react-native-paper';
-import HomeScreen from '../src/features/transfers/screens/TransferScreen';
-import { theme } from '../src/theme/paperTheme';
-jest.mock('../src/features/contacts/services/deviceContacts', () => ({
+import HomeScreen from '@/features/transfers/screens/TransferScreen/TransferScreen';
+import { theme } from '@/theme/paperTheme';
+jest.mock('@/features/contacts/services/deviceContacts', () => ({
   contactPermission: jest.fn(),
   loadContacts: jest.fn(),
   requestContactPermission: jest.fn(),
@@ -25,7 +25,7 @@ jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => ({
   __esModule: true,
   default: jest.requireActual('react-native').Text,
 }));
-jest.mock('../src/features/transfers/services/transferApi', () => ({
+jest.mock('@/features/transfers/services/transferApi', () => ({
   getLedger: async () => ({
     account: async () => mockInitialAccount,
     history: async () => ({ items: [mockReceipt] }),
@@ -36,8 +36,8 @@ jest.mock('../src/features/transfers/services/transferApi', () => ({
   recoverPending: async () => null,
 }));
 
-jest.mock('../src/features/auth/services/authorize', () => ({
-  ...jest.requireActual('../src/features/auth/services/authorize'),
+jest.mock('@/features/auth/services/authorize', () => ({
+  ...jest.requireActual('@/features/auth/services/authorize'),
   authorizeTransfer: jest.fn(async () => undefined),
 }));
 const mockReceipt = {

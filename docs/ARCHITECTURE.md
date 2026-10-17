@@ -6,23 +6,47 @@ The project is organized by feature, with explicit responsibilities inside each 
 
 ```text
 src/
-  app/                         Expo Router route entry points and root providers
-  components/                  Shared screen primitives and adjacent *.styles.ts
-  config/                      Application-wide library configuration
-  theme/                       Semantic colors, spacing and Paper theme
+  app/                          Thin Expo Router entries and root providers
+  components/
+    Screen/                     Shared primitive: Screen.tsx + Screen.styles.ts
+  config/                       Application-wide library configuration
+  theme/                        Semantic tokens and Paper integration
   features/
-    auth/services/             Native OS authentication boundary
+    auth/services/              Native OS authentication boundary
+    contacts/
+      components/ContactPicker/
+        ContactPicker.tsx
+        ContactPicker.styles.ts
+        hooks/useContacts.ts    Private picker state/query orchestration
+        __tests__/              Component behavior tests
+      domain/                   Contact/phone resolution rules
+      services/                 Native contacts API boundary
     transfers/
-      components/              Presentation and adjacent *.styles.ts
-      hooks/                   Form subscriptions, query state and submission workflow
-      screens/                 Screen composition and adjacent *.styles.ts
-      services/                SQLite ledger and simulated asynchronous transport
-      domain/                  Money, validation, types and domain errors
-      constants/               Fictional fixtures, shared limits and query keys
-__tests__/                     Domain, SQLite and interaction/workflow tests
+      components/
+        TransferForm/
+          TransferForm.tsx
+          TransferForm.styles.ts
+          hooks/useTransferForm.ts
+        HistoryModal/           Own component, styles, hook and tests
+        DemoSettings/           Own component and styles
+        RecipientAvatar/        Shared within the transfer feature
+        ReviewTransfer/
+        TransferReceiptView/
+      screens/TransferScreen/
+        TransferScreen.tsx
+        TransferScreen.styles.ts
+        hooks/                  Screen account/submission orchestration
+      services/                 SQLite ledger and simulated transport
+      domain/                   Money, validation, types and domain errors
+      constants/                Shared fixtures, limits, query keys and scenarios
+__tests__/                      Cross-component flows, domain and service tests
 ```
 
 Routes stay thin. Screens compose features; components receive explicit props; hooks own React state/lifecycle; domain modules have no React dependency. SQL and native APIs stay out of presentation. Dependencies point toward domain types, not from domain logic into screens. Local service connection types remain next to the integration that uses them.
+
+Group a component's main file, styles, private hooks and component tests in its named directory. Private utilities/constants/config belong there only when they exist; do not create empty files or folders as a template. Promote code to the feature level only when it expresses shared domain behavior or has multiple component consumers. Shared financial limits, bank fixtures, native services and ledger rules remain outside component-private folders.
+
+Use `@/` for imports across module boundaries and short relative paths inside a component directory. Jest maps the same alias as TypeScript/Metro. Named component files retain useful editor tab names; avoid one-line barrel files solely to hide the path.
 
 Add new domains as features rather than growing a global components/hooks/utils dumping ground. Avoid pass-through wrappers, unused barrel exports, generalized repositories and a second global state framework. Split a component when it has an independently meaningful responsibility, not to meet an arbitrary line limit.
 

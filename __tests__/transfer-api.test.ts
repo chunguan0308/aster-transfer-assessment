@@ -3,13 +3,13 @@ import {
   getLedger,
   recoverPending,
   submitTransfer,
-} from '../src/features/transfers/services/transferApi';
-import { recipients } from '../src/features/transfers/constants/demoData';
+} from '@/features/transfers/services/transferApi';
+import { recipients } from '@/features/transfers/constants/demoData';
 
 jest.mock('expo-network', () => ({ getNetworkStateAsync: jest.fn() }));
 jest.mock('expo-crypto', () => ({ randomUUID: () => '00000000-0000-4000-8000-000000000002' }));
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: async () => ({ closeAsync: jest.fn() }) }));
-jest.mock('../src/features/transfers/services/ledger', () => ({ createLedger: () => mockLedger }));
+jest.mock('@/features/transfers/services/ledger', () => ({ createLedger: () => mockLedger }));
 const mockLedger = {
   initialize: jest.fn(),
   complete: jest.fn(),

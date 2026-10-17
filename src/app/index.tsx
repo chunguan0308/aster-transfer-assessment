@@ -1,1 +1,1 @@
-export { default } from '../features/transfers/screens/TransferScreen';
+export { default } from '@/features/transfers/screens/TransferScreen/TransferScreen';

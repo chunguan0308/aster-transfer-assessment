@@ -2,17 +2,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { PropsWithChildren } from 'react';
 import { AppState } from 'react-native';
-import { authorizeTransfer, AuthenticationError } from '../src/features/auth/services/authorize';
-import { getLedger, submitTransfer } from '../src/features/transfers/services/transferApi';
-import { TransferError } from '../src/features/transfers/domain/errors';
-import { recipients } from '../src/features/transfers/constants/demoData';
-import { useTransfer } from '../src/features/transfers/hooks/useTransfer';
+import { authorizeTransfer, AuthenticationError } from '@/features/auth/services/authorize';
+import { getLedger, submitTransfer } from '@/features/transfers/services/transferApi';
+import { TransferError } from '@/features/transfers/domain/errors';
+import { recipients } from '@/features/transfers/constants/demoData';
+import { useTransfer } from '@/features/transfers/screens/TransferScreen/hooks/useTransfer';
 
-jest.mock('../src/features/auth/services/authorize', () => ({
-  ...jest.requireActual('../src/features/auth/services/authorize'),
+jest.mock('@/features/auth/services/authorize', () => ({
+  ...jest.requireActual('@/features/auth/services/authorize'),
   authorizeTransfer: jest.fn(),
 }));
-jest.mock('../src/features/transfers/services/transferApi', () => ({
+jest.mock('@/features/transfers/services/transferApi', () => ({
   getLedger: jest.fn(),
   submitTransfer: jest.fn(),
 }));

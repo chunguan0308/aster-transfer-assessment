@@ -5,7 +5,7 @@ import {
   getPermissionsAsync,
   requestPermissionsAsync,
 } from 'expo-contacts';
-import { contactRows } from '../domain/contactRows';
+import { contactRows } from '@/features/contacts/domain/contactRows';
 
 export const CONTACT_PAGE_SIZE = 50;
 export async function contactPermission() {
