@@ -45,7 +45,7 @@ The generated Android APK is under `android/app/build/outputs/apk/release/`. Thi
 
 After the first build, `npm start` starts Metro. If 8081 is occupied, use `npm run android -- --port 8082` (or `ios`) and `npm start -- --port 8082`. On Xcode 27 the simulator UI is in Device Hub.
 
-**Android Studio:** use a checkout path without spaces, such as `aster-transfer`. Expo Modules Core's IDE helper splits compiler paths on spaces. A separate clean, space-free checkout passed install, checks, native generation, the IDE helper and ARM64 Release build. Full Studio UI sync remains unverified; command-line builds also work in the original path.
+**Android Studio:** use a checkout path without spaces, such as `aster-transfer`. Expo Modules Core's IDE helper splits compiler paths on spaces. A separate clean, space-free checkout passed install, checks, native generation, the IDE helper, ARM64 Release build and Android Studio 2026.2.1 Gradle sync. Command-line builds also work in the original path.
 
 ## Walkthrough
 
