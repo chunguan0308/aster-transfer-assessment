@@ -9,6 +9,8 @@ import {
 import { PaperProvider } from 'react-native-paper';
 import HomeScreen from '@/features/transfers/screens/TransferScreen';
 import { theme } from '@/theme/paperTheme';
+import { submitTransfer } from '@/features/transfers/services/transferApi';
+import { TransferError } from '@/features/transfers/domain/errors';
 jest.mock('@/features/contacts/services/deviceContacts', () => ({
   contactPermission: jest.fn(),
   loadContacts: jest.fn(),
@@ -30,8 +32,9 @@ jest.mock('@/features/transfers/services/transferApi', () => ({
     history: async () => ({ items: [mockReceipt] }),
     savePending: async () => undefined,
     clearPending: async () => undefined,
+    find: async () => mockReceipt,
   }),
-  submitTransfer: async () => mockReceipt,
+  submitTransfer: jest.fn(async () => mockReceipt),
   recoverPending: async () => null,
 }));
 
@@ -158,4 +161,42 @@ test('an unavailable Settings link gives manual setup guidance without sending',
   expect(screen.queryByText('Money sent.')).not.toBeOnTheScreen();
   open.mockRestore();
   alert.mockRestore();
+});
+
+test('uncertain results explain that checking status cannot make another payment', async () => {
+  AppState.currentState = 'active';
+  jest
+    .mocked(submitTransfer)
+    .mockRejectedValueOnce(new TransferError('uncertain', 'Response lost'));
+  await render(
+    <QueryClientProvider
+      client={
+        new QueryClient({
+          defaultOptions: {
+            queries: { retry: false, gcTime: Infinity },
+            mutations: { gcTime: Infinity },
+          },
+        })
+      }
+    >
+      <PaperProvider theme={theme}>
+        <HomeScreen />
+      </PaperProvider>
+    </QueryClientProvider>,
+  );
+  await fireEvent.press(await screen.findByRole('radio', { name: 'Aisha Rahman' }));
+  await fireEvent.changeText(screen.getByLabelText('Amount in Malaysian ringgit'), '123.45');
+  await fireEvent.press(screen.getByText('Review transfer'));
+  await fireEvent.press(screen.getByText('Authorize & send'));
+  expect(
+    await screen.findByText('This checks your existing transfer. No new payment will be made.'),
+  ).toBeOnTheScreen();
+  expect(
+    screen.queryByText('Confirm with biometrics or your device passcode.'),
+  ).not.toBeOnTheScreen();
+  expect(screen.getByText('Edit details')).toBeDisabled();
+  await fireEvent.press(screen.getByText('Check transfer status'));
+  expect(await screen.findByText('Money sent.')).toBeOnTheScreen();
+  expect(authorizeTransfer).toHaveBeenCalledTimes(1);
+  expect(submitTransfer).toHaveBeenCalledTimes(1);
 });

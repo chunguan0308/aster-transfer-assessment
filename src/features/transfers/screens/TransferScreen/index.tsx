@@ -115,7 +115,7 @@ export default function TransferScreen() {
             </Button>
           )}
           <Button
-            icon="fingerprint"
+            icon={transfer.unresolved ? 'refresh' : 'fingerprint'}
             mode="contained"
             loading={transfer.busy}
             disabled={transfer.busy}
@@ -132,7 +132,11 @@ export default function TransferScreen() {
                 ? 'Check transfer status'
                 : 'Authorize & send'}
           </Button>
-          <Text variant="bodySmall">Confirm with biometrics or your device passcode.</Text>
+          <Text variant="bodySmall">
+            {transfer.unresolved
+              ? 'This checks your existing transfer. No new payment will be made.'
+              : 'Confirm with biometrics or your device passcode.'}
+          </Text>
         </ReviewTransfer>
       ) : (
         <>
