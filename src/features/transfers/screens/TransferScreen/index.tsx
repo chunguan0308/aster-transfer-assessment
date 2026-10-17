@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { DemoSettings } from '@/features/transfers/components/DemoSettings';
 import { simulationOptions, type Simulation } from '@/features/transfers/constants/simulation';
 import { HistoryModal } from '@/features/transfers/components/HistoryModal';
-import { Linking, View } from 'react-native';
+import { Alert, Linking, View } from 'react-native';
 import { ActivityIndicator, Button, Icon, Text } from 'react-native-paper';
 import { Screen } from '@/components/Screen';
 import { recipients } from '@/features/transfers/constants/demoData';
@@ -103,7 +103,12 @@ export default function TransferScreen() {
           {transfer.error instanceof AuthenticationError && transfer.error.kind === 'setup' && (
             <Button
               onPress={() => {
-                void Linking.openSettings();
+                void Linking.openSettings().catch(() =>
+                  Alert.alert(
+                    'Open Settings manually',
+                    'Set up a screen lock or biometrics in your device Settings, then return to Aster.',
+                  ),
+                );
               }}
             >
               Open device settings

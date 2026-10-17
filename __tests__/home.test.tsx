@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AppState } from 'react-native';
-import { authorizeTransfer } from '@/features/auth/services/authorize';
+import { Alert, AppState, Linking } from 'react-native';
+import { authorizeTransfer, AuthenticationError } from '@/features/auth/services/authorize';
 import {
   initialAccount as mockInitialAccount,
   recipients,
@@ -119,4 +119,44 @@ test('history resend prefills an editable form and requires new authorization', 
   await fireEvent.press(screen.getByText('Authorize & send'));
   expect(await screen.findByText('Money sent.')).toBeOnTheScreen();
   expect(authorizeTransfer).toHaveBeenCalledTimes(2);
+});
+
+test('an unavailable Settings link gives manual setup guidance without sending', async () => {
+  jest
+    .mocked(authorizeTransfer)
+    .mockRejectedValueOnce(new AuthenticationError('setup', 'Set up a screen lock.'));
+  const open = jest
+    .spyOn(Linking, 'openSettings')
+    .mockRejectedValueOnce(new Error('No settings handler'));
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  await render(
+    <QueryClientProvider
+      client={
+        new QueryClient({
+          defaultOptions: {
+            queries: { retry: false, gcTime: Infinity },
+            mutations: { gcTime: Infinity },
+          },
+        })
+      }
+    >
+      <PaperProvider theme={theme}>
+        <HomeScreen />
+      </PaperProvider>
+    </QueryClientProvider>,
+  );
+  await fireEvent.press(await screen.findByRole('radio', { name: 'Aisha Rahman' }));
+  await fireEvent.changeText(screen.getByLabelText('Amount in Malaysian ringgit'), '1');
+  await fireEvent.press(screen.getByText('Review transfer'));
+  await fireEvent.press(screen.getByText('Authorize & send'));
+  await fireEvent.press(await screen.findByText('Open device settings'));
+  await waitFor(() =>
+    expect(alert).toHaveBeenCalledWith(
+      'Open Settings manually',
+      'Set up a screen lock or biometrics in your device Settings, then return to Aster.',
+    ),
+  );
+  expect(screen.queryByText('Money sent.')).not.toBeOnTheScreen();
+  open.mockRestore();
+  alert.mockRestore();
 });
