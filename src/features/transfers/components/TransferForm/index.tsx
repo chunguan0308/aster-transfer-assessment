@@ -130,7 +130,12 @@ export function TransferForm({ account, initialValues, onReview }: Props) {
           {errors.note.message}
         </HelperText>
       )}
-      <Button mode="contained" contentStyle={styles.button} onPress={review}>
+      <Button
+        mode="contained"
+        contentStyle={styles.button}
+        onPress={review}
+        maxFontSizeMultiplier={2}
+      >
         Review transfer
       </Button>
       {contactsOpen && (

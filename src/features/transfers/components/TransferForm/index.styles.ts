@@ -14,7 +14,8 @@ export const styles = StyleSheet.create({
   title: { fontWeight: '700' },
   recipients: { gap: 8 },
   person: {
-    width: 76,
+    minWidth: 76,
+    paddingHorizontal: 12,
     alignItems: 'center',
     gap: 8,
     paddingVertical: 12,

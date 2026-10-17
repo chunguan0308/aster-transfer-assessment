@@ -56,98 +56,114 @@ export function ContactPicker({ onSelect, onClose }: Props) {
             </Text>
             <IconButton icon="close" accessibilityLabel="Close contacts" onPress={onClose} />
           </View>
-          <View style={styles.content}>
-            <Text variant="bodyMedium">
-              Choose a phone number. You’ll confirm the account name before sending.
-            </Text>
-            <Text variant="bodySmall">Contacts stay on this device and are not uploaded.</Text>
-            {permission.data?.granted && (
-              <TextInput
-                accessibilityLabel="Search contact names"
-                placeholder="Search names"
-                value={search}
-                onChangeText={setSearch}
-                mode="outlined"
-                clearButtonMode="while-editing"
-              />
-            )}
-            {permission.data?.accessPrivileges === 'limited' && (
+          <FlatList
+            style={styles.list}
+            data={permission.data?.granted ? rows : []}
+            renderItem={renderItem}
+            keyExtractor={contactKey}
+            ListHeaderComponent={
               <>
-                <Text>Only contacts you allowed are shown.</Text>
-                {Platform.OS === 'ios' && (
-                  <>
-                    <Text>Manage access in device Settings, then return here.</Text>
-                    <Button onPress={openSettings}>Manage allowed contacts</Button>
-                  </>
-                )}
+                <View style={styles.content}>
+                  <Text variant="bodyMedium">
+                    Choose a phone number. You’ll confirm the account name before sending.
+                  </Text>
+                  <Text variant="bodySmall">
+                    Contacts stay on this device and are not uploaded.
+                  </Text>
+                  {permission.data?.granted && (
+                    <TextInput
+                      accessibilityLabel="Search contact names"
+                      placeholder="Search names"
+                      value={search}
+                      onChangeText={setSearch}
+                      mode="outlined"
+                      clearButtonMode="while-editing"
+                    />
+                  )}
+                  {permission.data?.accessPrivileges === 'limited' && (
+                    <>
+                      <Text>Only contacts you allowed are shown.</Text>
+                      {Platform.OS === 'ios' && (
+                        <>
+                          <Text>Manage access in device Settings, then return here.</Text>
+                          <Button onPress={openSettings} maxFontSizeMultiplier={2}>
+                            Manage allowed contacts
+                          </Button>
+                        </>
+                      )}
+                    </>
+                  )}
+                  {!!notice && (
+                    <Text accessibilityRole="alert" style={styles.error}>
+                      {notice}
+                    </Text>
+                  )}
+                  {access.isError && (
+                    <Text accessibilityRole="alert" style={styles.error}>
+                      Couldn’t update contacts access. Try again.
+                    </Text>
+                  )}
+                </View>
+                {permission.isPending ? (
+                  <ActivityIndicator accessibilityLabel="Checking contact access" />
+                ) : permission.isError ? (
+                  <View style={styles.empty}>
+                    <Text>Couldn’t check contact access.</Text>
+                    <Button
+                      onPress={() => {
+                        void permission.refetch();
+                      }}
+                    >
+                      Try again
+                    </Button>
+                  </View>
+                ) : !permission.data.granted ? (
+                  <View style={styles.empty}>
+                    <Text variant="titleMedium">Contacts access is off</Text>
+                    <Text>You can keep using saved recipients without sharing contacts.</Text>
+                    {permission.data.canAskAgain ? (
+                      <Button
+                        mode="contained"
+                        disabled={access.isPending}
+                        loading={access.isPending}
+                        onPress={() => access.mutate()}
+                      >
+                        Allow contacts
+                      </Button>
+                    ) : (
+                      <Button mode="contained" onPress={openSettings}>
+                        Open settings
+                      </Button>
+                    )}
+                    <Button onPress={onClose} maxFontSizeMultiplier={2}>
+                      Use saved recipients
+                    </Button>
+                  </View>
+                ) : null}
               </>
-            )}
-            {!!notice && (
-              <Text accessibilityRole="alert" style={styles.error}>
-                {notice}
-              </Text>
-            )}
-            {access.isError && (
-              <Text accessibilityRole="alert" style={styles.error}>
-                Couldn’t update contacts access. Try again.
-              </Text>
-            )}
-          </View>
-          {permission.isPending ? (
-            <ActivityIndicator accessibilityLabel="Checking contact access" />
-          ) : permission.isError ? (
-            <View style={styles.empty}>
-              <Text>Couldn’t check contact access.</Text>
-              <Button
-                onPress={() => {
-                  void permission.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            </View>
-          ) : !permission.data.granted ? (
-            <View style={styles.empty}>
-              <Text variant="titleMedium">Contacts access is off</Text>
-              <Text>You can keep using saved recipients without sharing contacts.</Text>
-              {permission.data.canAskAgain ? (
-                <Button
-                  mode="contained"
-                  disabled={access.isPending}
-                  loading={access.isPending}
-                  onPress={() => access.mutate()}
-                >
-                  Allow contacts
-                </Button>
-              ) : (
-                <Button mode="contained" onPress={openSettings}>
-                  Open settings
-                </Button>
-              )}
-              <Button onPress={onClose}>Use saved recipients</Button>
-            </View>
-          ) : (
-            <FlatList
-              style={styles.list}
-              data={rows}
-              renderItem={renderItem}
-              keyExtractor={contactKey}
-              keyboardShouldPersistTaps="handled"
-              keyboardDismissMode="on-drag"
-              initialNumToRender={12}
-              maxToRenderPerBatch={12}
-              windowSize={7}
-              refreshing={contacts.isRefetching && !contacts.isFetchingNextPage}
-              onRefresh={() => {
-                void permission.refetch();
-                void contacts.refetch();
-              }}
-              onEndReachedThreshold={0.4}
-              onEndReached={() => {
-                if (contacts.hasNextPage && !contacts.isFetching && !searching)
-                  void contacts.fetchNextPage();
-              }}
-              ListEmptyComponent={
+            }
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            initialNumToRender={12}
+            maxToRenderPerBatch={12}
+            windowSize={7}
+            refreshing={contacts.isRefetching && !contacts.isFetchingNextPage}
+            onRefresh={() => {
+              void permission.refetch();
+              if (permission.data?.granted) void contacts.refetch();
+            }}
+            onEndReachedThreshold={0.4}
+            onEndReached={() => {
+              if (
+                permission.data?.granted &&
+                contacts.hasNextPage &&
+                !contacts.isFetching &&
+                !searching
+              )
+                void contacts.fetchNextPage();
+            }}
+            ListEmptyComponent={
+              permission.data?.granted ? (
                 <View style={styles.empty}>
                   {contacts.isPending || searching ? (
                     <ActivityIndicator accessibilityLabel="Loading contacts" />
@@ -172,26 +188,28 @@ export function ContactPicker({ onSelect, onClose }: Props) {
                           ? 'Try a different name.'
                           : 'Add a contact on your device or use a saved recipient.'}
                       </Text>
-                      <Button onPress={onClose}>Use saved recipients</Button>
+                      <Button onPress={onClose} maxFontSizeMultiplier={2}>
+                        Use saved recipients
+                      </Button>
                     </>
                   )}
                 </View>
-              }
-              ListFooterComponent={
-                contacts.isFetchingNextPage ? (
-                  <ActivityIndicator style={styles.footer} />
-                ) : contacts.isFetchNextPageError ? (
-                  <Button
-                    onPress={() => {
-                      void contacts.fetchNextPage();
-                    }}
-                  >
-                    Retry loading more
-                  </Button>
-                ) : undefined
-              }
-            />
-          )}
+              ) : undefined
+            }
+            ListFooterComponent={
+              contacts.isFetchingNextPage ? (
+                <ActivityIndicator style={styles.footer} />
+              ) : contacts.isFetchNextPageError ? (
+                <Button
+                  onPress={() => {
+                    void contacts.fetchNextPage();
+                  }}
+                >
+                  Retry loading more
+                </Button>
+              ) : undefined
+            }
+          />
         </SafeAreaView>
       </SafeAreaProvider>
     </Modal>

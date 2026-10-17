@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
   container: { gap: 20 },
   back: { alignSelf: 'flex-start', marginLeft: -12 },
   title: { fontWeight: '700', color: colors.ink },
+  amount: { alignSelf: 'stretch', textAlign: 'center' },
   card: {
     backgroundColor: colors.surface,
     borderRadius: 24,

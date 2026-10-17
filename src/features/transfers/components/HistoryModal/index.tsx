@@ -63,28 +63,32 @@ export function HistoryModal({
             </ScrollView>
           ) : (
             <>
-              <Text style={styles.introduction}>
-                Your completed transfers, saved on this device.
-              </Text>
-              {history.isError && receipts.length > 0 && (
-                <View style={styles.empty}>
-                  <Text accessibilityRole="alert">
-                    Couldn’t refresh activity. Your saved transfers are still shown.
-                  </Text>
-                  <Button
-                    onPress={() => {
-                      void history.refetch();
-                    }}
-                  >
-                    Try again
-                  </Button>
-                </View>
-              )}
               <FlatList
                 style={styles.list}
                 data={receipts}
                 renderItem={renderItem}
                 keyExtractor={receiptKey}
+                ListHeaderComponent={
+                  <>
+                    <Text style={styles.introduction}>
+                      Your completed transfers, saved on this device.
+                    </Text>
+                    {history.isError && receipts.length > 0 && (
+                      <View style={styles.empty}>
+                        <Text accessibilityRole="alert">
+                          Couldn’t refresh activity. Your saved transfers are still shown.
+                        </Text>
+                        <Button
+                          onPress={() => {
+                            void history.refetch();
+                          }}
+                        >
+                          Try again
+                        </Button>
+                      </View>
+                    )}
+                  </>
+                }
                 initialNumToRender={12}
                 maxToRenderPerBatch={12}
                 windowSize={7}

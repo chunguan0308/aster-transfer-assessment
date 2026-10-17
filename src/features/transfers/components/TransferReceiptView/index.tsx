@@ -23,7 +23,13 @@ export function TransferReceiptView({
         Money sent.
       </Text>
       <Text variant="bodyLarge">{receipt.recipient.name} received your transfer.</Text>
-      <Text variant="displaySmall" style={styles.title}>
+      <Text
+        variant="displaySmall"
+        style={styles.title}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.3}
+      >
         {formatMoney(receipt.amountMinor)}
       </Text>
       <View style={styles.card}>

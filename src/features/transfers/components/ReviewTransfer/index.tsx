@@ -38,7 +38,13 @@ export function ReviewTransfer({
         </Text>
         <Divider style={styles.divider} />
         <Text variant="bodyMedium">You’re sending</Text>
-        <Text variant="displaySmall" style={styles.title}>
+        <Text
+          variant="displaySmall"
+          style={[styles.title, styles.amount]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.3}
+        >
           {formatMoney(draft.amountMinor)}
         </Text>
         <Text variant="bodyMedium">Transfer fee · RM 0.00</Text>

@@ -56,6 +56,8 @@ test('denied access has a manual alternative and never reads contacts', async ()
   expect(await screen.findByText('Contacts access is off')).toBeOnTheScreen();
   expect(screen.getByText('Open settings')).toBeOnTheScreen();
   expect(contacts).not.toHaveBeenCalled();
+  await fireEvent(screen.getByText('Contacts access is off'), 'refresh');
+  expect(contacts).not.toHaveBeenCalled();
   await fireEvent.press(screen.getByText('Use saved recipients'));
   expect(onClose).toHaveBeenCalledTimes(1);
 });

@@ -9,8 +9,12 @@ export const RecipientAvatar = memo(function RecipientAvatar({
   recipient: Recipient;
 }) {
   return (
-    <View style={avatarStyle(recipient.color)} importantForAccessibility="no">
-      <Text style={styles.initials}>
+    <View
+      style={avatarStyle(recipient.color)}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
+      <Text style={styles.initials} maxFontSizeMultiplier={1}>
         {recipient.name
           .split(' ')
           .map((part) => part[0])

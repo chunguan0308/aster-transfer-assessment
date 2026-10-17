@@ -116,6 +116,7 @@ export default function TransferScreen() {
           )}
           <Button
             icon={transfer.unresolved ? 'refresh' : 'fingerprint'}
+            maxFontSizeMultiplier={2}
             mode="contained"
             loading={transfer.busy}
             disabled={transfer.busy}
@@ -151,6 +152,9 @@ export default function TransferScreen() {
               style={styles.balanceValue}
               variant="displaySmall"
               accessibilityLabel={`Available balance ${formatMoney(currentAccount.balanceMinor)}`}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.3}
             >
               {formatMoney(currentAccount.balanceMinor)}
             </Text>
