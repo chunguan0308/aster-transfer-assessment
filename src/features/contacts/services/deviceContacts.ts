@@ -25,6 +25,3 @@ export async function loadContacts(name: string, offset: number) {
     nextOffset: contacts.length === CONTACT_PAGE_SIZE ? offset + CONTACT_PAGE_SIZE : undefined,
   };
 }
-export async function manageLimitedContacts() {
-  await Contact.presentAccessPicker();
-}

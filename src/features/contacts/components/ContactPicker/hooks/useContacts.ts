@@ -4,7 +4,6 @@ import { AppState } from 'react-native';
 import {
   contactPermission,
   loadContacts,
-  manageLimitedContacts,
   requestContactPermission,
 } from '@/features/contacts/services/deviceContacts';
 
@@ -43,13 +42,7 @@ export function useContacts(search: string) {
     retry: false,
   });
   const access = useMutation({
-    mutationFn: async (limited: boolean) => {
-      if (limited) {
-        await manageLimitedContacts();
-        return contactPermission();
-      }
-      return requestContactPermission();
-    },
+    mutationFn: requestContactPermission,
     onSuccess: async (data) => {
       client.setQueryData(permissionKey, data);
       await client.invalidateQueries({ queryKey: ['contacts'] });

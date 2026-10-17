@@ -13,7 +13,6 @@ jest.mock('@/features/contacts/services/deviceContacts', () => ({
   contactPermission: jest.fn(),
   loadContacts: jest.fn(),
   requestContactPermission: jest.fn(),
-  manageLimitedContacts: jest.fn(),
 }));
 
 jest.mock(

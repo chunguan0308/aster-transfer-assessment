@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { AppState, Linking } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import { ContactPicker } from '..';
 import { contactPermission, loadContacts } from '@/features/contacts/services/deviceContacts';
@@ -9,7 +10,6 @@ jest.mock('@/features/contacts/services/deviceContacts', () => ({
   contactPermission: jest.fn(),
   loadContacts: jest.fn(),
   requestContactPermission: jest.fn(),
-  manageLimitedContacts: jest.fn(),
 }));
 jest.mock(
   'react-native-safe-area-context',
@@ -43,6 +43,7 @@ beforeEach(() => {
   } as Awaited<ReturnType<typeof contactPermission>>);
   contacts.mockResolvedValue({ rows: [], nextOffset: undefined });
 });
+afterEach(() => jest.restoreAllMocks());
 test('denied access has a manual alternative and never reads contacts', async () => {
   permission.mockResolvedValue({
     status: 'denied',
@@ -59,6 +60,8 @@ test('denied access has a manual alternative and never reads contacts', async ()
   expect(onClose).toHaveBeenCalledTimes(1);
 });
 test('limited access and empty contacts are explained', async () => {
+  const openSettings = jest.spyOn(Linking, 'openSettings').mockResolvedValue();
+  const appState = jest.spyOn(AppState, 'addEventListener');
   permission.mockResolvedValue({
     status: 'granted',
     granted: true,
@@ -69,6 +72,34 @@ test('limited access and empty contacts are explained', async () => {
   await openPicker();
   expect(await screen.findByText('Only contacts you allowed are shown.')).toBeOnTheScreen();
   expect(await screen.findByText('No contacts available')).toBeOnTheScreen();
+  await fireEvent.press(screen.getByText('Manage allowed contacts'));
+  expect(openSettings).toHaveBeenCalledTimes(1);
+  contacts.mockResolvedValue({
+    rows: [{ key: '1', name: 'Newly allowed', phone: '+12025550101', recipientId: 'aisha' }],
+    nextOffset: undefined,
+  });
+  const onState = appState.mock.calls.find(([event]) => event === 'change')![1];
+  await act(async () => onState('active'));
+  expect(await screen.findByText('Newly allowed')).toBeOnTheScreen();
+  expect(screen.getByText('Your contacts')).toBeOnTheScreen();
+});
+test('an unavailable Settings link gives manual contacts guidance', async () => {
+  const openSettings = jest
+    .spyOn(Linking, 'openSettings')
+    .mockRejectedValue(new Error('Unavailable'));
+  permission.mockResolvedValue({
+    status: 'denied',
+    granted: false,
+    canAskAgain: false,
+    expires: 'never',
+    accessPrivileges: 'none',
+  } as Awaited<ReturnType<typeof contactPermission>>);
+  await openPicker();
+  await fireEvent.press(await screen.findByText('Open settings'));
+  await waitFor(() => expect(openSettings).toHaveBeenCalledTimes(1));
+  expect(
+    await screen.findByText('Open your device Settings to manage contacts access.'),
+  ).toBeOnTheScreen();
 });
 test('choosing a registered phone resolves its payee ID, while an unknown number explains why it cannot send', async () => {
   contacts.mockResolvedValue({

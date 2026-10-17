@@ -22,6 +22,11 @@ export function ContactPicker({ onSelect, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [notice, setNotice] = useState('');
   const { permission, contacts, access, searching } = useContacts(search);
+  const openSettings = () => {
+    void Linking.openSettings().catch(() =>
+      setNotice('Open your device Settings to manage contacts access.'),
+    );
+  };
   const select = useCallback(
     (row: ContactRow) => {
       if (!row.recipientId) {
@@ -70,13 +75,10 @@ export function ContactPicker({ onSelect, onClose }: Props) {
               <>
                 <Text>Only contacts you allowed are shown.</Text>
                 {Platform.OS === 'ios' && (
-                  <Button
-                    loading={access.isPending}
-                    disabled={access.isPending}
-                    onPress={() => access.mutate(true)}
-                  >
-                    Manage allowed contacts
-                  </Button>
+                  <>
+                    <Text>Manage access in device Settings, then return here.</Text>
+                    <Button onPress={openSettings}>Manage allowed contacts</Button>
+                  </>
                 )}
               </>
             )}
@@ -113,19 +115,12 @@ export function ContactPicker({ onSelect, onClose }: Props) {
                   mode="contained"
                   disabled={access.isPending}
                   loading={access.isPending}
-                  onPress={() => access.mutate(false)}
+                  onPress={() => access.mutate()}
                 >
                   Allow contacts
                 </Button>
               ) : (
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    void Linking.openSettings().catch(() =>
-                      setNotice('Open your device Settings to allow contacts.'),
-                    );
-                  }}
-                >
+                <Button mode="contained" onPress={openSettings}>
                   Open settings
                 </Button>
               )}
