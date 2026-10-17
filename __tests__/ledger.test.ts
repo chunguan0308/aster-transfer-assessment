@@ -129,3 +129,31 @@ test('reopening does not reset funds and cursor pages have no duplicate or missi
   ]);
   expect(second.nextCursor).toBeUndefined();
 });
+
+test('pages through 1,000 transfers without duplicates while newer activity arrives', async () => {
+  for (let index = 1; index <= 1000; index++) {
+    await ledger.complete(
+      {
+        idempotencyKey: `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`,
+        draft: { ...request.draft, amountMinor: 1 },
+      },
+      `AST-${index}`,
+      '2026-10-17T00:00:00Z',
+    );
+  }
+  let page = await ledger.history();
+  const ids = page.items.map((item) => item.id);
+  await ledger.complete(
+    { ...request, idempotencyKey: '00000000-0000-4000-8000-000000001001' },
+    'AST-new',
+    '2026-10-17T01:00:00Z',
+  );
+  while (page.nextCursor !== undefined) {
+    page = await ledger.history(page.nextCursor);
+    ids.push(...page.items.map((item) => item.id));
+  }
+  expect(ids).toEqual(Array.from({ length: 1000 }, (_, index) => `AST-${1000 - index}`));
+  expect(new Set(ids).size).toBe(1000);
+  expect((await ledger.history()).items[0].id).toBe('AST-new');
+  expect((await ledger.account()).balanceMinor).toBe(1250000 - 1000 - request.draft.amountMinor);
+});
