@@ -55,11 +55,13 @@ After the first build, `npm start` starts Metro. If 8081 is occupied, use `npm r
 4. Open **Demo** before review to select a failure scenario. For **Response lost**, authorize once, then choose **Check transfer status**; it reads the existing reference instead of sending again. Restart also reconciles saved pending attempts.
 5. Open the contacts picker to request native access. Use fictional test contacts; Aisha's registered fixture number is `+1 202-555-0101`. Unknown numbers cannot become bank recipients. Saved recipients work without contact access.
 
-**[Watch the native demo (60 seconds)](docs/media/demo-ios.mp4)** — iOS Simulator Release: validation, limited contacts, review, OS Face ID, receipt, history, edited re-send and a fresh authorization cancelled after non-match. Static waiting intervals are shortened; the UI and OS prompts are actual recordings. Simulator biometric events do not prove a physical sensor.
+**[Watch the iOS Simulator demo (60 seconds)](docs/media/demo-ios.mp4)** — Release build: validation, limited contacts, review, OS Face ID, receipt, history, edited re-send and a fresh authorization cancelled after non-match. Static waiting intervals are shortened; the UI and OS prompts are actual recordings. Simulator biometric events do not prove a physical sensor.
+
+**[Watch the physical Android demo (61 seconds)](docs/media/demo-android-physical.mp4)** — Android 17 handset: review, native fingerprint authorization and the RM 1.00 simulated receipt. Android protects the system authentication screen from recording, so that brief moment may appear black; device authentication and the resulting balance were verified separately on the handset.
 
 <img src="docs/media/transfer-home.png" alt="Aster native transfer form and available balance" width="280" />
 
-The Android physical-device demonstration is pending. Installable binaries stay outside Git.
+Installable binaries stay outside Git. Both demos use the local simulated ledger; no real money moves.
 
 ## Structure and decisions
 
