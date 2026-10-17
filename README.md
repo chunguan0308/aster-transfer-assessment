@@ -35,7 +35,7 @@ These commands build native development clients. Expo Go and web previews are no
 
 After the first build, `npm start` starts Metro. If 8081 is occupied, use `npm run android -- --port 8082` (or `ios`) and `npm start -- --port 8082`. On Xcode 27 the simulator UI is in Device Hub.
 
-**Android Studio caveat:** IDE sync in a checkout path containing spaces failed in Expo Modules Core's `generateStubPCH` helper, which splits a compiler command on spaces. Command-line ARM64 Debug and Release builds in this checkout passed. The IDE-sync issue is still under investigation.
+**Android Studio:** use a checkout path without spaces, such as `aster-transfer`. Expo Modules Core's IDE helper splits compiler paths on spaces. A separate clean, space-free checkout passed install, checks, native generation, the IDE helper and ARM64 Release build. Full Studio UI sync remains unverified; command-line builds also work in the original path.
 
 ## Walkthrough
 
@@ -45,11 +45,15 @@ After the first build, `npm start` starts Metro. If 8081 is occupied, use `npm r
 4. Open **Demo** before review to select a failure scenario. For **Response lost**, authorize once, then choose **Check transfer status**; it reads the existing reference instead of sending again. Restart also reconciles saved pending attempts.
 5. Open the contacts picker to request native access. Use fictional test contacts; Aisha's registered fixture number is `+1 202-555-0101`. Unknown numbers cannot become bank recipients. Saved recipients work without contact access.
 
-The demo video and final distributable are pending the remaining native acceptance pass.
+**[Watch the native demo (60 seconds)](docs/media/demo-ios.mp4)** — iOS Simulator Release: validation, limited contacts, review, OS Face ID, receipt, history, edited re-send and a fresh authorization cancelled after non-match. Static waiting intervals are shortened; the UI and OS prompts are actual recordings. Simulator biometric events do not prove a physical sensor.
+
+<img src="docs/media/transfer-home.png" alt="Aster native transfer form and available balance" width="280" />
+
+The Android physical-device demonstration and final distributable remain pending.
 
 ## Structure and decisions
 
-See [architecture and dependency rationale](docs/ARCHITECTURE.md). Each component owns `index.tsx`, `index.styles.ts`, and any private hooks/tests. React Native uses typed native style sheets rather than browser SCSS.
+See [design and challenges](docs/DESIGN.md) and [architecture and dependency rationale](docs/ARCHITECTURE.md). Each component owns `index.tsx`, `index.styles.ts`, and any private hooks/tests. React Native uses typed native style sheets rather than browser SCSS.
 
 Forms use React Hook Form/Zod, asynchronous state uses TanStack Query, native controls use React Native Paper, and the local ledger uses Expo SQLite. Money is integer sen; a unique attempt reference and an exclusive transaction keep the debit and receipt together. No second global state framework is needed.
 
@@ -64,9 +68,9 @@ npx codegraph explore "TransferScreen useTransfer LedgerDatabase"
 
 CI installs from the lockfile and runs `check`; the pre-commit hook does the same. An existing local CodeGraph index is refreshed after commits.
 
-All 74 tests across 10 suites passed, as did TypeScript, lint, formatting and Android/iOS Hermes exports. Earlier native builds and the iOS Face ID success/cancel/receipt flow passed. Latest native rebuilds, large-data measurements, Android physical-device authentication and delivery assets remain pending.
+All 79 tests across 10 suites, TypeScript, zero-warning lint and formatting passed. Native iOS checks cover Face ID outcomes, bank/network rejection, lost-response lookup, restart recovery, editable re-send and limited/denied contacts. Android checks include native launch, form/keyboard/review and blocking send without a secure lock. Physical Android authorization and complete maximum-font layout checks remain pending.
 
-Expo Doctor passed with the documented Jest 30 compatibility exception. The dependency audit has unresolved upstream advisories; runtime exposure still needs final assessment. Review the locked dependency advisories before applying a forced dependency downgrade.
+Expo Doctor passed all 20 checks. The dependency audit retains four unique upstream advisories; affected implementations were absent from the inspected Android Release and iOS export bundles. These remain open toolchain risks; no forced incompatible SDK downgrade was applied. An audit pass or emulator run is not a production security certification.
 
 ## Assumptions and production boundary
 
