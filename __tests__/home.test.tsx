@@ -7,7 +7,7 @@ import {
   recipients,
 } from '@/features/transfers/constants/demoData';
 import { PaperProvider } from 'react-native-paper';
-import HomeScreen from '@/features/transfers/screens/TransferScreen/TransferScreen';
+import HomeScreen from '@/features/transfers/screens/TransferScreen';
 import { theme } from '@/theme/paperTheme';
 jest.mock('@/features/contacts/services/deviceContacts', () => ({
   contactPermission: jest.fn(),

@@ -1,4 +1,4 @@
-import { styles, avatarStyle } from './RecipientAvatar.styles';
+import { styles, avatarStyle } from './index.styles';
 import { memo } from 'react';
 import { Text, View } from 'react-native';
 import type { Recipient } from '@/features/transfers/domain/types';

@@ -1,4 +1,4 @@
-import { styles } from './TransferReceiptView.styles';
+import { styles } from './index.styles';
 import { View } from 'react-native';
 import { Button, Divider, Icon, Text } from 'react-native-paper';
 import { colors } from '@/theme/tokens';

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
-import { ContactPicker } from '../ContactPicker';
+import { ContactPicker } from '..';
 import { contactPermission, loadContacts } from '@/features/contacts/services/deviceContacts';
 import { theme } from '@/theme/paperTheme';
 

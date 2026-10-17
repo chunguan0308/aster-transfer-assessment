@@ -12,9 +12,9 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { formatMoney } from '@/features/transfers/domain/money';
 import type { TransferReceipt } from '@/features/transfers/domain/types';
 import { useHistory } from './hooks/useHistory';
-import { RecipientAvatar } from '@/features/transfers/components/RecipientAvatar/RecipientAvatar';
-import { TransferReceiptView } from '@/features/transfers/components/TransferReceiptView/TransferReceiptView';
-import { styles } from './HistoryModal.styles';
+import { RecipientAvatar } from '@/features/transfers/components/RecipientAvatar';
+import { TransferReceiptView } from '@/features/transfers/components/TransferReceiptView';
+import { styles } from './index.styles';
 
 export function HistoryModal({
   onClose,

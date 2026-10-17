@@ -1,9 +1,9 @@
-import { styles } from './ReviewTransfer.styles';
+import { styles } from './index.styles';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { Button, Divider, Text } from 'react-native-paper';
 import { formatMoney } from '@/features/transfers/domain/money';
-import { RecipientAvatar } from '@/features/transfers/components/RecipientAvatar/RecipientAvatar';
+import { RecipientAvatar } from '@/features/transfers/components/RecipientAvatar';
 import type { Recipient, TransferDraft } from '@/features/transfers/domain/types';
 
 export function ReviewTransfer({

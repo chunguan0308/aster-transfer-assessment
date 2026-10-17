@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
-import { HistoryModal } from '../HistoryModal';
+import { HistoryModal } from '..';
 import { recipients } from '@/features/transfers/constants/demoData';
 import { getLedger } from '@/features/transfers/services/transferApi';
 import { theme } from '@/theme/paperTheme';

@@ -1,4 +1,4 @@
-import { styles } from './Screen.styles';
+import { styles } from './index.styles';
 import type { PropsWithChildren } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

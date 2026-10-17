@@ -12,7 +12,7 @@ import { ActivityIndicator, Button, IconButton, Text, TextInput } from 'react-na
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import type { ContactRow } from '@/features/contacts/domain/contactRows';
 import { useContacts } from './hooks/useContacts';
-import { styles } from './ContactPicker.styles';
+import { styles } from './index.styles';
 
 interface Props {
   onSelect: (id: string) => void;

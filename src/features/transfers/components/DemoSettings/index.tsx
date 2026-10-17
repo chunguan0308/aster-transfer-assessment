@@ -1,7 +1,7 @@
 import { ScrollView, View } from 'react-native';
 import { Button, Dialog, Portal, RadioButton, Text } from 'react-native-paper';
 import { simulationOptions, type Simulation } from '@/features/transfers/constants/simulation';
-import { styles } from './DemoSettings.styles';
+import { styles } from './index.styles';
 
 export function DemoSettings({
   visible,

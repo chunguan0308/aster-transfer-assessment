@@ -8,15 +8,15 @@ The project is organized by feature, with explicit responsibilities inside each 
 src/
   app/                          Thin Expo Router entries and root providers
   components/
-    Screen/                     Shared primitive: Screen.tsx + Screen.styles.ts
+    Screen/                     Shared primitive: index.tsx + index.styles.ts
   config/                       Application-wide library configuration
   theme/                        Semantic tokens and Paper integration
   features/
     auth/services/              Native OS authentication boundary
     contacts/
       components/ContactPicker/
-        ContactPicker.tsx
-        ContactPicker.styles.ts
+        index.tsx
+        index.styles.ts
         hooks/useContacts.ts    Private picker state/query orchestration
         __tests__/              Component behavior tests
       domain/                   Contact/phone resolution rules
@@ -24,8 +24,8 @@ src/
     transfers/
       components/
         TransferForm/
-          TransferForm.tsx
-          TransferForm.styles.ts
+          index.tsx
+          index.styles.ts
           hooks/useTransferForm.ts
         HistoryModal/           Own component, styles, hook and tests
         DemoSettings/           Own component and styles
@@ -33,8 +33,8 @@ src/
         ReviewTransfer/
         TransferReceiptView/
       screens/TransferScreen/
-        TransferScreen.tsx
-        TransferScreen.styles.ts
+        index.tsx
+        index.styles.ts
         hooks/                  Screen account/submission orchestration
       services/                 SQLite ledger and simulated transport
       domain/                   Money, validation, types and domain errors
@@ -46,13 +46,13 @@ Routes stay thin. Screens compose features; components receive explicit props; h
 
 Group a component's main file, styles, private hooks and component tests in its named directory. Private utilities/constants/config belong there only when they exist; do not create empty files or folders as a template. Promote code to the feature level only when it expresses shared domain behavior or has multiple component consumers. Shared financial limits, bank fixtures, native services and ledger rules remain outside component-private folders.
 
-Use `@/` for imports across module boundaries and short relative paths inside a component directory. Jest maps the same alias as TypeScript/Metro. Named component files retain useful editor tab names; avoid one-line barrel files solely to hide the path.
+Use `@/` for imports across module boundaries and short relative paths inside a component directory. Jest maps the same alias as TypeScript/Metro. Each component directory exposes its implementation directly through `index.tsx` and keeps native styles in `index.styles.ts`. Import the directory; do not add a second pass-through barrel file.
 
 Add new domains as features rather than growing a global components/hooks/utils dumping ground. Avoid pass-through wrappers, unused barrel exports, generalized repositories and a second global state framework. Split a component when it has an independently meaningful responsibility, not to meet an arbitrary line limit.
 
 ## Native styling
 
-React Native renders native views; regular browser CSS files are not its standard styling mechanism. Use typed `StyleSheet.create` in an adjacent `Component.styles.ts`, semantic tokens from `theme/tokens.ts`, and the shared Paper theme. No static inline JSX styles or component-local style sheets. ESLint enforces the inline-style restriction. Dynamic data-driven avatar colors are calculated in the style module.
+React Native renders native views; regular browser CSS files are not its standard styling mechanism. Use typed `StyleSheet.create` in the adjacent `index.styles.ts`, semantic tokens from `theme/tokens.ts`, and the shared Paper theme. No static inline JSX styles or component-local style sheets. ESLint enforces the inline-style restriction. Dynamic data-driven avatar colors are calculated in the style module.
 
 This separation is a project convention, not a claim that colocated `StyleSheet` definitions are intrinsically wrong. It makes styles easy to find and keeps render functions focused. Keep accessibility font scaling; avoid fixed text heights and do not disable font scaling to hide layout problems.
 
@@ -81,3 +81,9 @@ TDesign's published React Mobile library targets browser React/ReactDOM, not Rea
 Money is integer sen. The form validates current displayed funds; the ledger independently validates payee identity, amount, note and the debit condition. Review creates a snapshot. Native authorization grants permission for one attempt only. UI locking and lifecycle checks protect submission; SQLite transactions and a unique request key protect debit consistency.
 
 Transport failure after commit is an uncertain outcome, not proof that nothing happened. Retain its reference, block editing/resending and resolve status before another attempt. The local mock can resolve its SQLite ledger after a restart; a real bank implementation needs server authorization, signed transaction challenges, durable server idempotency and reconciliation. Neither a local database nor a successful OS prompt supplies those server guarantees.
+
+## Editor configuration
+
+The root tsconfig explicitly extends the installed Expo JSON file. The workspace selects `node_modules/typescript/lib`, so editor diagnostics and CLI checks use the same TypeScript version and JSX settings. Prettier is the workspace formatter. `cspell.json` recognizes React Native's `Pressable` identifier without disabling spell checking.
+
+If files were open before installation or while paths changed, open the current on-disk component entry and refresh the TypeScript server if required. Do not fix an unconfigured editor project by suppressing JSX errors or changing native components into Web elements.

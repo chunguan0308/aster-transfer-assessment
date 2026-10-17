@@ -1,12 +1,12 @@
-import { styles } from './TransferForm.styles';
+import { styles } from './index.styles';
 import { useState } from 'react';
-import { ContactPicker } from '@/features/contacts/components/ContactPicker/ContactPicker';
+import { ContactPicker } from '@/features/contacts/components/ContactPicker';
 import { Controller } from 'react-hook-form';
 import { Keyboard, Pressable, ScrollView, View } from 'react-native';
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 import { recipients } from '@/features/transfers/constants/demoData';
 import { formatMoney } from '@/features/transfers/domain/money';
-import { RecipientAvatar } from '@/features/transfers/components/RecipientAvatar/RecipientAvatar';
+import { RecipientAvatar } from '@/features/transfers/components/RecipientAvatar';
 import type { Account, TransferDraft } from '@/features/transfers/domain/types';
 import type { TransferFormInput } from '@/features/transfers/domain/validation';
 import { useTransferForm } from './hooks/useTransferForm';

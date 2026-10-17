@@ -1,22 +1,22 @@
-import { styles } from './TransferScreen.styles';
+import { styles } from './index.styles';
 import { useState } from 'react';
-import { DemoSettings } from '@/features/transfers/components/DemoSettings/DemoSettings';
+import { DemoSettings } from '@/features/transfers/components/DemoSettings';
 import { simulationOptions, type Simulation } from '@/features/transfers/constants/simulation';
-import { HistoryModal } from '@/features/transfers/components/HistoryModal/HistoryModal';
+import { HistoryModal } from '@/features/transfers/components/HistoryModal';
 import { Linking, View } from 'react-native';
 import { ActivityIndicator, Button, Icon, Text } from 'react-native-paper';
-import { Screen } from '@/components/Screen/Screen';
+import { Screen } from '@/components/Screen';
 import { recipients } from '@/features/transfers/constants/demoData';
 import { formatMoney, amountInput } from '@/features/transfers/domain/money';
-import { ReviewTransfer } from '@/features/transfers/components/ReviewTransfer/ReviewTransfer';
-import { TransferForm } from '@/features/transfers/components/TransferForm/TransferForm';
+import { ReviewTransfer } from '@/features/transfers/components/ReviewTransfer';
+import { TransferForm } from '@/features/transfers/components/TransferForm';
 import type { TransferDraft } from '@/features/transfers/domain/types';
 import { colors } from '@/theme/tokens';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAccount } from './hooks/useAccount';
 import { queryKeys } from '@/features/transfers/constants/queryKeys';
 import { useTransfer } from './hooks/useTransfer';
-import { TransferReceiptView } from '@/features/transfers/components/TransferReceiptView/TransferReceiptView';
+import { TransferReceiptView } from '@/features/transfers/components/TransferReceiptView';
 import { AuthenticationError } from '@/features/auth/services/authorize';
 
 export default function TransferScreen() {
