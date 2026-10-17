@@ -19,7 +19,12 @@ export function parseAmount(input: string): number {
 
 export function formatMoney(minor: number): string {
   if (!Number.isSafeInteger(minor)) throw new Error('Invalid money value.');
-  return currency.format(minor / 100);
+  const fraction = String(Math.abs(minor) % 100).padStart(2, '0');
+  // Format whole ringgit separately so decimal conversion cannot round away a sen.
+  return currency
+    .formatToParts(Math.trunc(minor / 100))
+    .map((part) => (part.type === 'fraction' ? fraction : part.value))
+    .join('');
 }
 
 export function amountInput(minor: number): string {

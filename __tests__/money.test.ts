@@ -57,3 +57,9 @@ test('reports recipient, insufficient-balance, and note errors at the relevant f
       'note',
     ]);
 });
+
+test('currency display preserves the final sen throughout the accepted safe-integer range', () => {
+  expect(formatMoney(Number.MAX_SAFE_INTEGER)).toBe('RM\u00a090,071,992,547,409.91');
+  expect(formatMoney(-Number.MAX_SAFE_INTEGER)).toBe('-RM\u00a090,071,992,547,409.91');
+  expect(formatMoney(-1)).toBe('-RM\u00a00.01');
+});
