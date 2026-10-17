@@ -57,6 +57,7 @@ export function ContactPicker({ onSelect, onClose }: Props) {
             <IconButton icon="close" accessibilityLabel="Close contacts" onPress={onClose} />
           </View>
           <FlatList
+            testID="device-contacts"
             style={styles.list}
             data={permission.data?.granted ? rows : []}
             renderItem={renderItem}

@@ -34,6 +34,7 @@ async function openPicker(onSelect = jest.fn(), onClose = jest.fn()) {
   return { onSelect, onClose };
 }
 beforeEach(() => {
+  jest.useFakeTimers();
   permission.mockResolvedValue({
     status: 'granted',
     granted: true,
@@ -43,7 +44,11 @@ beforeEach(() => {
   } as Awaited<ReturnType<typeof contactPermission>>);
   contacts.mockResolvedValue({ rows: [], nextOffset: undefined });
 });
-afterEach(() => jest.restoreAllMocks());
+afterEach(async () => {
+  await act(async () => jest.runOnlyPendingTimers());
+  jest.useRealTimers();
+  jest.restoreAllMocks();
+});
 test('denied access has a manual alternative and never reads contacts', async () => {
   permission.mockResolvedValue({
     status: 'denied',
@@ -56,7 +61,8 @@ test('denied access has a manual alternative and never reads contacts', async ()
   expect(await screen.findByText('Contacts access is off')).toBeOnTheScreen();
   expect(screen.getByText('Open settings')).toBeOnTheScreen();
   expect(contacts).not.toHaveBeenCalled();
-  await fireEvent(screen.getByText('Contacts access is off'), 'refresh');
+  await fireEvent(screen.getByTestId('device-contacts'), 'refresh');
+  await waitFor(() => expect(permission).toHaveBeenCalledTimes(2));
   expect(contacts).not.toHaveBeenCalled();
   await fireEvent.press(screen.getByText('Use saved recipients'));
   expect(onClose).toHaveBeenCalledTimes(1);
