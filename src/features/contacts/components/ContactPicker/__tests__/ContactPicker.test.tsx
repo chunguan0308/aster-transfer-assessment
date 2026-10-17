@@ -131,3 +131,40 @@ test('a native read error offers retry instead of pretending the address book is
   expect(await screen.findByText('Couldn’t load your contacts.')).toBeOnTheScreen();
   expect(screen.getByText('Try again')).toBeOnTheScreen();
 });
+
+test('returning after revocation checks permission before any contact refresh and removes page retry', async () => {
+  const appState = jest.spyOn(AppState, 'addEventListener');
+  contacts
+    .mockResolvedValueOnce({
+      rows: [{ key: '1', name: 'Allowed before', phone: '+12025550101', recipientId: 'aisha' }],
+      nextOffset: 50,
+    })
+    .mockRejectedValue(new Error('Page failed'));
+  await openPicker();
+  await screen.findByText('Allowed before');
+  await fireEvent(screen.getByTestId('device-contacts'), 'endReached', { distanceFromEnd: 0 });
+  await screen.findByText('Retry loading more');
+  const readsBeforeReturn = contacts.mock.calls.length;
+  let resolvePermission!: (value: Awaited<ReturnType<typeof contactPermission>>) => void;
+  permission.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        resolvePermission = resolve;
+      }),
+  );
+  const onState = appState.mock.calls.find(([event]) => event === 'change')![1];
+  await act(async () => onState('active'));
+  expect(contacts).toHaveBeenCalledTimes(readsBeforeReturn);
+  await act(async () =>
+    resolvePermission({
+      status: 'denied',
+      granted: false,
+      canAskAgain: false,
+      expires: 'never',
+      accessPrivileges: 'none',
+    } as Awaited<ReturnType<typeof contactPermission>>),
+  );
+  await screen.findByText('Contacts access is off');
+  expect(contacts).toHaveBeenCalledTimes(readsBeforeReturn);
+  expect(screen.queryByText('Retry loading more')).not.toBeOnTheScreen();
+});

@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import {
   contactPermission,
@@ -11,15 +11,6 @@ const permissionKey = ['contacts-permission'] as const;
 export function useContacts(search: string) {
   const client = useQueryClient();
   const [name, setName] = useState('');
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') {
-        void client.invalidateQueries({ queryKey: permissionKey });
-        void client.invalidateQueries({ queryKey: ['contacts'] });
-      }
-    });
-    return () => subscription.remove();
-  }, [client]);
   useEffect(() => {
     const timer = setTimeout(() => setName(search.trim()), 250);
     return () => clearTimeout(timer);
@@ -36,11 +27,23 @@ export function useContacts(search: string) {
     queryFn: ({ pageParam }) => loadContacts(name, pageParam),
     initialPageParam: 0,
     getNextPageParam: (last) => last.nextOffset,
-    enabled: permission.data?.granted === true,
+    enabled: permission.isSuccess && permission.data.granted,
     gcTime: 0,
     staleTime: 0,
     retry: false,
   });
+  const { refetch: refreshPermission } = permission;
+  const refresh = useCallback(async () => {
+    const result = await refreshPermission();
+    if (result.isSuccess && result.data.granted)
+      await client.invalidateQueries({ queryKey: ['contacts'] });
+  }, [client, refreshPermission]);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void refresh();
+    });
+    return () => subscription.remove();
+  }, [refresh]);
   const access = useMutation({
     mutationFn: requestContactPermission,
     onSuccess: async (data) => {
@@ -48,5 +51,5 @@ export function useContacts(search: string) {
       await client.invalidateQueries({ queryKey: ['contacts'] });
     },
   });
-  return { permission, contacts, access, searching: name !== search.trim() };
+  return { permission, contacts, access, refresh, searching: name !== search.trim() };
 }

@@ -21,7 +21,8 @@ interface Props {
 export function ContactPicker({ onSelect, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [notice, setNotice] = useState('');
-  const { permission, contacts, access, searching } = useContacts(search);
+  const { permission, contacts, access, refresh, searching } = useContacts(search);
+  const granted = permission.isSuccess && permission.data.granted;
   const openSettings = () => {
     void Linking.openSettings().catch(() =>
       setNotice('Open your device Settings to manage contacts access.'),
@@ -59,7 +60,7 @@ export function ContactPicker({ onSelect, onClose }: Props) {
           <FlatList
             testID="device-contacts"
             style={styles.list}
-            data={permission.data?.granted ? rows : []}
+            data={granted ? rows : []}
             renderItem={renderItem}
             keyExtractor={contactKey}
             ListHeaderComponent={
@@ -71,7 +72,7 @@ export function ContactPicker({ onSelect, onClose }: Props) {
                   <Text variant="bodySmall">
                     Contacts stay on this device and are not uploaded.
                   </Text>
-                  {permission.data?.granted && (
+                  {granted && (
                     <TextInput
                       accessibilityLabel="Search contact names"
                       placeholder="Search names"
@@ -81,7 +82,7 @@ export function ContactPicker({ onSelect, onClose }: Props) {
                       clearButtonMode="while-editing"
                     />
                   )}
-                  {permission.data?.accessPrivileges === 'limited' && (
+                  {granted && permission.data.accessPrivileges === 'limited' && (
                     <>
                       <Text>Only contacts you allowed are shown.</Text>
                       {Platform.OS === 'ios' && (
@@ -148,23 +149,19 @@ export function ContactPicker({ onSelect, onClose }: Props) {
             initialNumToRender={12}
             maxToRenderPerBatch={12}
             windowSize={7}
-            refreshing={contacts.isRefetching && !contacts.isFetchingNextPage}
+            refreshing={
+              permission.isRefetching || (contacts.isRefetching && !contacts.isFetchingNextPage)
+            }
             onRefresh={() => {
-              void permission.refetch();
-              if (permission.data?.granted) void contacts.refetch();
+              void refresh();
             }}
             onEndReachedThreshold={0.4}
             onEndReached={() => {
-              if (
-                permission.data?.granted &&
-                contacts.hasNextPage &&
-                !contacts.isFetching &&
-                !searching
-              )
+              if (granted && contacts.hasNextPage && !contacts.isFetching && !searching)
                 void contacts.fetchNextPage();
             }}
             ListEmptyComponent={
-              permission.data?.granted ? (
+              granted ? (
                 <View style={styles.empty}>
                   {contacts.isPending || searching ? (
                     <ActivityIndicator accessibilityLabel="Loading contacts" />
@@ -198,7 +195,7 @@ export function ContactPicker({ onSelect, onClose }: Props) {
               ) : undefined
             }
             ListFooterComponent={
-              contacts.isFetchingNextPage ? (
+              !granted ? undefined : contacts.isFetchingNextPage ? (
                 <ActivityIndicator style={styles.footer} />
               ) : contacts.isFetchNextPageError ? (
                 <Button
