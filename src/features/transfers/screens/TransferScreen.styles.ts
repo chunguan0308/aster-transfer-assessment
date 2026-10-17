@@ -7,12 +7,7 @@ export const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   brandText: { fontWeight: '800', letterSpacing: -1, color: colors.ink },
-  badge: {
-    backgroundColor: colors.badge,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
+
   balance: { borderRadius: 24, backgroundColor: colors.ink, padding: 24, gap: 16 },
   balanceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   balanceLabel: { color: colors.onDark },

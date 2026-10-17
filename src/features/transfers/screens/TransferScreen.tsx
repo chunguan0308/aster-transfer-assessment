@@ -1,5 +1,7 @@
 import { styles } from './TransferScreen.styles';
 import { useState } from 'react';
+import { DemoSettings } from '../components/DemoSettings';
+import { simulationOptions, type Simulation } from '../constants/simulation';
 import { HistoryModal } from '../components/HistoryModal';
 import { Linking, View } from 'react-native';
 import { ActivityIndicator, Button, Icon, Text } from 'react-native-paper';
@@ -24,6 +26,8 @@ export default function TransferScreen() {
   const [draft, setDraft] = useState<TransferDraft>();
   const [reviewing, setReviewing] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [simulation, setSimulation] = useState<Simulation>('normal');
   const [formVersion, setFormVersion] = useState(0);
   const recipient = recipients.find((item) => item.id === draft?.recipientId);
   const receipt = transfer.receipt ?? recovery.data;
@@ -61,9 +65,15 @@ export default function TransferScreen() {
             aster
           </Text>
         </View>
-        <View style={styles.badge}>
-          <Text variant="labelSmall">DEMO ACCOUNT</Text>
-        </View>
+        <Button
+          compact
+          icon="flask-outline"
+          accessibilityLabel="Demo settings"
+          disabled={reviewing || !!receipt || transfer.busy}
+          onPress={() => setDemoOpen(true)}
+        >
+          Demo
+        </Button>
       </View>
       {receipt ? (
         <TransferReceiptView
@@ -105,7 +115,7 @@ export default function TransferScreen() {
             loading={transfer.busy}
             disabled={transfer.busy}
             contentStyle={styles.action}
-            onPress={() => transfer.send(draft, recipient, 'normal')}
+            onPress={() => transfer.send(draft, recipient, simulation)}
           >
             {transfer.busy
               ? transfer.phase === 'authorizing'
@@ -139,6 +149,12 @@ export default function TransferScreen() {
               Available balance · •••• {currentAccount.accountNumber.slice(-4)}
             </Text>
           </View>
+          {simulation !== 'normal' && (
+            <Text style={styles.caption}>
+              Demo scenario:{' '}
+              {simulationOptions.find((option) => option.value === simulation)?.title}
+            </Text>
+          )}
           <Button icon="history" onPress={() => setHistoryOpen(true)}>
             View activity
           </Button>
@@ -161,6 +177,12 @@ export default function TransferScreen() {
           />
         </>
       )}
+      <DemoSettings
+        visible={demoOpen}
+        value={simulation}
+        onChange={setSimulation}
+        onClose={() => setDemoOpen(false)}
+      />
       {historyOpen && (
         <HistoryModal
           onClose={() => setHistoryOpen(false)}

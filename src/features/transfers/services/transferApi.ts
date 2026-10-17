@@ -4,7 +4,7 @@ import { openDatabaseAsync } from 'expo-sqlite';
 import { TransferError } from '../domain/errors';
 import { createLedger, type Ledger, type TransferAttempt } from './ledger';
 
-export type Simulation = 'normal' | 'offline' | 'insufficient' | 'response-lost';
+import type { Simulation } from '../constants/simulation';
 let opening: Promise<Ledger> | undefined;
 export function getLedger(): Promise<Ledger> {
   if (!opening) {
@@ -29,7 +29,15 @@ export function getLedger(): Promise<Ledger> {
 export async function submitTransfer(attempt: TransferAttempt, simulation: Simulation) {
   const ledger = await getLedger();
   // The mock simulates transport, not bank authorization. A real API verifies a signed challenge.
-  const network = await Network.getNetworkStateAsync();
+  let network: Awaited<ReturnType<typeof Network.getNetworkStateAsync>>;
+  try {
+    network = await Network.getNetworkStateAsync();
+  } catch {
+    throw new TransferError(
+      'network',
+      'Couldn’t check your connection. No money was sent. Please try again.',
+    );
+  }
   await new Promise((resolve) => setTimeout(resolve, 1000));
   if (
     simulation === 'offline' ||
