@@ -80,7 +80,7 @@ CI installs from the lockfile and runs `check`; the pre-commit hook does the sam
 
 All 80 tests across 10 suites, TypeScript, zero-warning lint and formatting passed. Native iOS checks cover Face ID outcomes, bank/network rejection, lost-response lookup, restart recovery, editable re-send and limited/denied contacts. Android checks include native launch, form/keyboard/review and blocking send without a secure lock. The iOS confirmation page was manually checked at the largest system text size. Physical Android authorization and successful system-credential entry remain pending.
 
-Expo Doctor passed all 20 checks. The dependency audit retains four unique upstream advisories; affected implementations were absent from the inspected Android Release and iOS export bundles. These remain open toolchain risks; no forced incompatible SDK downgrade was applied. An audit pass or emulator run is not a production security certification.
+Expo Doctor passed all 20 checks. The audit identified a patched `uuid` release compatible with the Xcode project parser, and the lockfile now pins it only under that toolchain. Three upstream advisories remain for `braces`, `node-forge`, and `sprintf-js`; GitHub currently lists no patched releases. Their implementations were absent from the inspected Android Release and iOS export bundles, but build-toolchain exposure remains. An audit pass or emulator run is not a production security certification.
 
 ## Assumptions and production boundary
 
