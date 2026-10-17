@@ -63,3 +63,18 @@ test('currency display preserves the final sen throughout the accepted safe-inte
   expect(formatMoney(-Number.MAX_SAFE_INTEGER)).toBe('-RM\u00a090,071,992,547,409.91');
   expect(formatMoney(-1)).toBe('-RM\u00a00.01');
 });
+
+test('currency display works on a native runtime without Intl formatToParts', () => {
+  const descriptor = Object.getOwnPropertyDescriptor(Intl.NumberFormat.prototype, 'formatToParts')!;
+  Object.defineProperty(Intl.NumberFormat.prototype, 'formatToParts', {
+    ...descriptor,
+    value: undefined,
+  });
+  try {
+    expect(formatMoney(1234)).toBe('RM\u00a012.34');
+    expect(formatMoney(0)).toBe('RM\u00a00.00');
+    expect(formatMoney(-1)).toBe('-RM\u00a00.01');
+  } finally {
+    Object.defineProperty(Intl.NumberFormat.prototype, 'formatToParts', descriptor);
+  }
+});

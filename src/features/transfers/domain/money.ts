@@ -1,10 +1,3 @@
-const currency = new Intl.NumberFormat('en-MY', {
-  style: 'currency',
-  currency: 'MYR',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 export function parseAmount(input: string): number {
   const text = input.trim();
   if (!/^(?:\d+(?:\.\d{0,2})?|\.\d{1,2})$/.test(text)) {
@@ -19,12 +12,10 @@ export function parseAmount(input: string): number {
 
 export function formatMoney(minor: number): string {
   if (!Number.isSafeInteger(minor)) throw new Error('Invalid money value.');
-  const fraction = String(Math.abs(minor) % 100).padStart(2, '0');
-  // Format whole ringgit separately so decimal conversion cannot round away a sen.
-  return currency
-    .formatToParts(Math.trunc(minor / 100))
-    .map((part) => (part.type === 'fraction' ? fraction : part.value))
-    .join('');
+  // Fixed English/MYR display avoids optional native Intl APIs and floating-point conversion.
+  const digits = String(Math.abs(minor)).padStart(3, '0');
+  const whole = digits.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return `${minor < 0 ? '-' : ''}RM\u00a0${whole}.${digits.slice(-2)}`;
 }
 
 export function amountInput(minor: number): string {
