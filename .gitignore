@@ -36,6 +36,24 @@ expo-env.d.ts
 /docs/DEVELOPMENT_LOG.md
 /docs/FINAL_REVIEW.md
 
+# Device data, installable builds, and IDE-local state
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.apk
+*.aab
+*.ipa
+*.xcarchive/
+*.xcresult/
+*.xcuserstate
+xcuserdata/
+local.properties
+.idea/
+*.orig
+*.rej
+
 # Local review, audit and acceptance records
 /docs/PERFORMANCE.md
 /docs/SECURITY.md

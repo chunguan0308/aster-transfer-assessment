@@ -68,7 +68,7 @@ npx codegraph explore "TransferScreen useTransfer LedgerDatabase"
 
 CI installs from the lockfile and runs `check`; the pre-commit hook does the same. An existing local CodeGraph index is refreshed after commits.
 
-All 79 tests across 10 suites, TypeScript, zero-warning lint and formatting passed. Native iOS checks cover Face ID outcomes, bank/network rejection, lost-response lookup, restart recovery, editable re-send and limited/denied contacts. Android checks include native launch, form/keyboard/review and blocking send without a secure lock. Physical Android authorization and complete maximum-font layout checks remain pending.
+All 80 tests across 10 suites, TypeScript, zero-warning lint and formatting passed. Native iOS checks cover Face ID outcomes, bank/network rejection, lost-response lookup, restart recovery, editable re-send and limited/denied contacts. Android checks include native launch, form/keyboard/review and blocking send without a secure lock. Physical Android authorization and complete maximum-font layout checks remain pending.
 
 Expo Doctor passed all 20 checks. The dependency audit retains four unique upstream advisories; affected implementations were absent from the inspected Android Release and iOS export bundles. These remain open toolchain risks; no forced incompatible SDK downgrade was applied. An audit pass or emulator run is not a production security certification.
 
