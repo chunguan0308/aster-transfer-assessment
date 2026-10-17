@@ -43,4 +43,3 @@ Use [ARCHITECTURE.md](ARCHITECTURE.md) for module and dependency conventions.
 - Exact currency formatting initially used an Intl method unavailable in iOS Hermes. A native Release launch exposed the crash; a missing-method regression and exact digit-string formatter repaired it without a polyfill.
 - The native limited-contacts presenter dismissed its enclosing React Native modal. System Settings management plus foreground refresh keeps the picker state consistent; native return and reopen were verified.
 - Extreme text scaling exposed fixed-width headers/recipient cells and instructions outside the list scroll area. Reflow, full-value money fitting and scrollable list headers address those constraints; complete maximum-font acceptance still needs native verification.
-
